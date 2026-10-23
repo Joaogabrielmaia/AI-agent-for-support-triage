@@ -1,5 +1,5 @@
 import type { TicketCategory } from "../agent/types";
-import { normalizeQuestion } from "../agent/gaps";
+import { clusterQuestions } from "../agent/gaps";
 import { db } from "./db";
 
 export interface MetricMessage {
@@ -40,7 +40,7 @@ export interface Metrics {
   gaps: GapRow[];
 }
 
-export function estimateCostUsd(inputTokens: number, outputTokens: number, env: NodeJS.ProcessEnv = process.env): number | null {
+export function estimateCostUsd(inputTokens: number, outputTokens: number, env: Record<string, string | undefined> = process.env): number | null {
   const pin = Number(env.PRICE_INPUT_PER_MTOK);
   const pout = Number(env.PRICE_OUTPUT_PER_MTOK);
   if (!pin || !pout) return null;
@@ -48,7 +48,7 @@ export function estimateCostUsd(inputTokens: number, outputTokens: number, env: 
 }
 
 /** Pure function so the dashboard rules are unit-testable (RF-10). */
-export function computeMetrics(convs: MetricConversation[], env: NodeJS.ProcessEnv = process.env): Metrics {
+export function computeMetrics(convs: MetricConversation[], env: Record<string, string | undefined> = process.env): Metrics {
   const n = convs.length;
   const msgs = convs.flatMap((c) => c.messages);
   const answered = (c: MetricConversation) => c.messages.some((m) => m.kind === "ANSWER");
@@ -62,20 +62,23 @@ export function computeMetrics(convs: MetricConversation[], env: NodeJS.ProcessE
   const tin = msgs.reduce((t, m) => t + m.inputTokens, 0);
   const tout = msgs.reduce((t, m) => t + m.outputTokens, 0);
 
-  const gapMap = new Map<string, GapRow>();
+  const refused: { question: string; at: Date }[] = [];
   for (const c of convs) {
     c.messages.forEach((m, i) => {
       if (m.kind !== "REFUSAL") return;
       const q = [...c.messages.slice(0, i)].reverse().find((x) => x.role === "CUSTOMER");
-      if (!q) return;
-      const key = normalizeQuestion(q.content);
-      const cur = gapMap.get(key);
-      if (cur) {
-        cur.count++;
-        if (q.createdAt > cur.lastSeen) cur.lastSeen = q.createdAt;
-      } else gapMap.set(key, { question: q.content, count: 1, lastSeen: q.createdAt });
+      if (q) refused.push({ question: q.content, at: q.createdAt });
     });
   }
+  const groups = clusterQuestions(refused.map((r) => r.question));
+  const gapMap = new Map<number, GapRow>();
+  refused.forEach((r, i) => {
+    const cur = gapMap.get(groups[i]);
+    if (cur) {
+      cur.count++;
+      if (r.at > cur.lastSeen) cur.lastSeen = r.at;
+    } else gapMap.set(groups[i], { question: r.question, count: 1, lastSeen: r.at });
+  });
 
   const cost = estimateCostUsd(tin, tout, env);
   return {
