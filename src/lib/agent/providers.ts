@@ -54,7 +54,7 @@ export class MockProvider implements LlmProvider {
   async answer(req: AnswerRequest): Promise<Completion> {
     const q = new Set(tokenize(req.question));
     const scored: { s: string; score: number; order: number }[] = [];
-    req.sources.slice(0, 2).forEach((src, si) => {
+    req.sources.forEach((src, si) => {
       src.snippet.split(/(?<=[.!?])\s+/).forEach((s, i) => {
         const overlap = tokenize(s).filter((t) => q.has(t)).length;
         scored.push({ s, score: overlap + (si === 0 ? 0.5 : 0), order: si * 100 + i });

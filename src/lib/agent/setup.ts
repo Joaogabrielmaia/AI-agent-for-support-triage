@@ -15,7 +15,7 @@ export const BASELINE_PROFILE: Profile = {
   name: "baseline",
   chunking: { strategy: "article", maxChars: 1500 },
   embedder: { dim: EMBED_DIM, bigrams: false, synonyms: false, prefix: 0 },
-  agent: { threshold: 0.15, topK: 4, confidenceMode: "top1", minCoverage: 0 },
+  agent: { threshold: 0.15, topK: 4, confidenceMode: "top1", minCoverage: 0, chunksPerArticle: 1 },
 };
 
 /**
@@ -26,13 +26,23 @@ export const TUNED_PROFILE: Profile = {
   name: "tuned",
   chunking: { strategy: "section", maxChars: 600 },
   embedder: { dim: EMBED_DIM, bigrams: true, synonyms: true, prefix: 5 },
-  agent: { threshold: 0.16, topK: 4, confidenceMode: "top1+coverage", minCoverage: 0.4 },
+  agent: { threshold: 0.16, topK: 4, confidenceMode: "top1+coverage", minCoverage: 0.4, chunksPerArticle: 1 },
 };
 
-export const PROFILES: Record<string, Profile> = { baseline: BASELINE_PROFILE, tuned: TUNED_PROFILE };
+/**
+ * Round 3: the live demo showed "Quanto custa o plano Profissional?" answered with the extra-professional price.
+ * Cause: only one chunk per article reached the model. Fix: allow two chunks per article.
+ */
+export const FINAL_PROFILE: Profile = {
+  ...TUNED_PROFILE,
+  name: "final",
+  agent: { ...TUNED_PROFILE.agent, chunksPerArticle: 2 },
+};
+
+export const PROFILES: Record<string, Profile> = { baseline: BASELINE_PROFILE, tuned: TUNED_PROFILE, final: FINAL_PROFILE };
 
 /** The profile the app runs with. Updated after each evaluation round (see docs/04-avaliacao). */
-export const DEFAULT_PROFILE: Profile = TUNED_PROFILE;
+export const DEFAULT_PROFILE: Profile = FINAL_PROFILE;
 
 export interface KbIndex {
   articles: Article[];

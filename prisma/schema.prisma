@@ -1,0 +1,141 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+enum Role {
+  ADMIN
+  AGENT
+}
+
+enum MessageRole {
+  CUSTOMER
+  AGENT_AI
+  HUMAN
+}
+
+enum ResultKind {
+  ANSWER
+  REFUSAL
+  ESCALATION
+  BLOCKED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
+enum Rating {
+  CORRECT
+  INCORRECT
+}
+
+enum TicketCategory {
+  COBRANCA
+  CONTA_ACESSO
+  AGENDA
+  CLIENTES
+  FINANCEIRO_SALAO
+  PRIVACIDADE
+  TECNICO
+  PRIMEIROS_PASSOS
+  SUPORTE
+  OUTROS
+}
+
+enum Priority {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime  @default(now())
+  tickets      Ticket[]
+  ratings      Message[] @relation("MessageRater")
+}
+
+model Article {
+  slug     String  @id
+  title    String
+  category String
+  body     String
+  chunks   Chunk[]
+}
+
+model Chunk {
+  id          String                 @id
+  articleSlug String
+  article     Article                @relation(fields: [articleSlug], references: [slug], onDelete: Cascade)
+  heading     String
+  text        String
+  ordinal     Int
+  embedding   Unsupported("vector(512)")?
+
+  @@index([articleSlug])
+}
+
+model Conversation {
+  id           String         @id @default(cuid())
+  customerName String
+  category     TicketCategory @default(OUTROS)
+  isDemo       Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  messages     Message[]
+  ticket       Ticket?
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  /** Customer text is stored already masked (RN-06). */
+  content        String
+  kind           ResultKind?
+  sources        Json?
+  confidence     Float?
+  guardrail      String?
+  piiFound       String[]
+  inputTokens    Int         @default(0)
+  outputTokens   Int         @default(0)
+  rating         Rating?
+  ratedById      String?
+  ratedBy        User?       @relation("MessageRater", fields: [ratedById], references: [id])
+  ratedAt        DateTime?
+  createdAt      DateTime    @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([kind])
+}
+
+model Ticket {
+  id             String         @id @default(cuid())
+  conversationId String         @unique
+  conversation   Conversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  category       TicketCategory
+  priority       Priority
+  reason         String
+  summary        String
+  status         TicketStatus   @default(OPEN)
+  assigneeId     String?
+  assignee       User?          @relation(fields: [assigneeId], references: [id])
+  createdAt      DateTime       @default(now())
+  resolvedAt     DateTime?
+
+  @@index([status, priority])
+}

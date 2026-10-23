@@ -23,7 +23,7 @@ export const ESCALATION_RULES: EscalationRule[] = [
   },
   {
     id: "perda_de_dados",
-    test: /(sumiram|sumiu|desapareceram|desapareceu|perdi)\s+(\w+\s+){0,3}(agendamentos?|clientes?|dados|historico|cadastros?)|apagou\s+(\w+\s+){0,3}(agendamentos?|clientes?|dados)/,
+    test: /(sumiram|sumiu|desapareceram|desapareceu|perdi)\s+(\w+\s+){0,3}(agendamentos?|clientes?|dados|historico|cadastros?)|(agendamentos?|clientes?|dados|historico|cadastros?)\s+(\w+\s+){0,3}(sumiram|sumiu|desapareceram|desapareceu|foram\s+apagad\w+)|apagou\s+(\w+\s+){0,3}(agendamentos?|clientes?|dados)/,
     category: "TECNICO",
     priority: "URGENTE",
     reason: "Possível perda de dados do salão",

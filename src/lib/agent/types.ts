@@ -87,4 +87,6 @@ export interface AgentConfig {
   /** "top1": best cosine only. "top1+coverage": also needs the question terms to appear in the best chunk. */
   confidenceMode: "top1" | "top1+coverage";
   minCoverage: number;
+  /** How many chunks of the same article may be sent to the model as sources. */
+  chunksPerArticle: number;
 }

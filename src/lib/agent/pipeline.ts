@@ -51,11 +51,12 @@ export function scoreConfidence(hits: Hit[], question: string, cfg: AgentConfig,
 export function pickSources(hits: Hit[], cfg: AgentConfig): Source[] {
   if (!hits.length) return [];
   const floor = Math.max(cfg.threshold, hits[0].score * 0.6);
-  const seen = new Set<string>();
+  const perArticle = new Map<string, number>();
   const out: Source[] = [];
   for (const h of hits) {
-    if (h.score < floor || seen.has(h.chunk.articleSlug)) continue;
-    seen.add(h.chunk.articleSlug);
+    const used = perArticle.get(h.chunk.articleSlug) ?? 0;
+    if (h.score < floor || used >= cfg.chunksPerArticle) continue;
+    perArticle.set(h.chunk.articleSlug, used + 1);
     out.push({
       articleSlug: h.chunk.articleSlug,
       title: h.chunk.title,
