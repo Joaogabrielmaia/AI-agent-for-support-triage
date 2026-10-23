@@ -54,8 +54,8 @@ const out = [
   "",
   "> Gerado por `npm run eval:compare` a partir dos arquivos `resultados-*.json`. Não editar à mão.",
   "",
-  ...table(["rodada-1", "rodada-2", "rodada-3", "groq-1"], "Conjunto de desenvolvimento (50 perguntas)"),
-  ...table(["validacao-rodada-1", "validacao-rodada-2", "validacao-rodada-3", "validacao-groq-1"], "Conjunto de validação separado (20 perguntas)"),
+  ...table(["rodada-1", "rodada-2", "rodada-3", "groq-1", "groq-1-reavaliado"], "Conjunto de desenvolvimento (50 perguntas)"),
+  ...table(["validacao-rodada-1", "validacao-rodada-2", "validacao-rodada-3", "validacao-groq-1", "validacao-groq-1-reavaliado"], "Conjunto de validação separado (20 perguntas)"),
 ];
 fs.writeFileSync(path.join(DIR, "comparativo-rodadas.md"), out.join("\n"));
 console.log("comparativo-rodadas.md gerado");

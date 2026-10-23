@@ -47,7 +47,8 @@ export interface QuestionScore {
   outputTokens: number;
 }
 
-export const norm = (s: string) => stripAccents(s.toLowerCase());
+/** Minúsculas, sem acento, espaços especiais (U+202F, U+00A0) colapsados e sem marcas de negrito/itálico do markdown. */
+export const norm = (s: string) => stripAccents(s.toLowerCase()).replace(/[*_]+/g, "").replace(/\s+/g, " ").trim();
 
 export function scoreQuestion(
   q: EvalQuestion,

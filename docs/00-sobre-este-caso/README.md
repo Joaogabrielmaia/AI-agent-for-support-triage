@@ -27,8 +27,8 @@ A **Agenda Bela** é um SaaS pequeno de agendamento para salões e clínicas de 
 
 ## Uma limitação que precisa ficar clara desde já
 Não havia chave de API da Anthropic no ambiente em que construí isto. Por isso:
-1. As rodadas de avaliação registradas usam o **`MockProvider`** (extrativo e determinístico) e uma busca local por hashing. Elas medem **recuperação, limiar de confiança, escalonamento e guardrails**. **Não medem a qualidade de redação do Claude.**
-2. A rodada com o Claude real está **em branco**, com o passo a passo para eu rodar e preencher em [`../04-avaliacao/relatorio-claude.md`](../04-avaliacao/relatorio-claude.md).
+1. As rodadas 1 a 3 usam o **`MockProvider`** (extrativo e determinístico) e uma busca local por hashing. Elas medem **recuperação, limiar de confiança, escalonamento e guardrails**. **Não medem a qualidade de redação do Claude.**
+2. Rodei também uma vez um modelo aberto real (Groq), em [`../04-avaliacao/relatorio-modelo-aberto.md`](../04-avaliacao/relatorio-modelo-aberto.md); **não é o Claude**. A rodada com o Claude real está **em branco**, com o passo a passo para eu rodar e preencher em [`../04-avaliacao/relatorio-claude.md`](../04-avaliacao/relatorio-claude.md).
 3. O `AnthropicProvider` está implementado atrás da mesma interface, mas **não foi exercitado** neste repositório.
 
 ## Se eu tiver notas de uma conversa real

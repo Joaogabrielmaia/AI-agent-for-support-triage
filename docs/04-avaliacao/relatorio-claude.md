@@ -2,6 +2,8 @@
 
 > **Status: não executado.** Não havia chave de API da Anthropic no ambiente em que construí este projeto, então **todos os campos abaixo estão vazios de propósito**. Não estimei, não copiei do Mock e não inventei nenhum número. Quem rodar preenche.
 
+> Para uma rodada com outro modelo real, veja [`relatorio-modelo-aberto.md`](relatorio-modelo-aberto.md) (Groq). Ela não preenche este relatório.
+
 ## Passo a passo para rodar
 1. Tenha uma chave de API da Anthropic e confira o modelo e os preços vigentes na documentação da Anthropic.
 2. Na raiz do repositório, **no terminal** (nunca em arquivo versionado):

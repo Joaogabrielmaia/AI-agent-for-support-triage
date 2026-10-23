@@ -39,6 +39,8 @@
 }
 ```
 
+> **Leitura obrigatória:** esta execução usa o modelo real `groq:openai/gpt-oss-120b` com a mesma busca local por hashing. **Não é o Claude** (a rodada com o Claude segue em branco em `relatorio-claude.md`), é uma única execução de um modelo não determinístico, e a correção continua sendo o proxy de fatos esperados. Análise em `relatorio-modelo-aberto.md`.
+
 ## Resultado geral
 
 **14 de 20 perguntas aprovadas (70.0%).**
@@ -72,7 +74,7 @@
 
 ### Latência e custo
 
-- Latência por pergunta (medida): mediana 2208.1 ms, máxima 8380.5 ms. Com o MockProvider isso não inclui chamada de rede.
+- Latência por pergunta (medida): mediana 2208.1 ms, máxima 8380.5 ms. Inclui a chamada de rede ao provedor (e as retentativas após 429).
 - Tokens aproximados (caracteres/4): 4355 de entrada, 695 de saída, 253 por pergunta.
 - Custo: não estimado (defina PRICE_INPUT_PER_MTOK e PRICE_OUTPUT_PER_MTOK)
 

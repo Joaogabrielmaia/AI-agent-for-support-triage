@@ -5,7 +5,7 @@ Ordenado por **o que mais reduz a incerteza**, e não por o que é mais legal. T
 ## Próximos passos
 | # | Item | Por quê | Como saberei que funcionou |
 |---|---|---|---|
-| 1 | **Rodar a avaliação com o Claude real** ([instruções](../04-avaliacao/relatorio-claude.md)) | É a maior lacuna: nenhum número do projeto fala do modelo. | Relatório preenchido; ADR-005 confirmada ou revertida. |
+| 1 | **Rodar a avaliação com o Claude real** ([instruções](../04-avaliacao/relatorio-claude.md)) | É a maior lacuna: nenhum número fala do Claude (só do Mock e de uma execução da Groq). | Relatório preenchido; ADR-005 confirmada ou revertida. |
 | 2 | **Fechar o ciclo de feedback:** respostas "incorretas" viram perguntas de avaliação | Dá uso à marcação do atendente e traz casos reais. | O conjunto de avaliação cresce sem eu escrever. |
 | 3 | **Embeddings semânticos** no lugar do hashing (mantendo pgvector) | Os erros restantes são de vocabulário (ADR-002). | Mesma avaliação, comparando rodadas. |
 | 4 | **Segundo sinal de confiança:** "a fonte responde mesmo à pergunta?" | F01 e F03 não se separam por limiar (ADR-004). | Os dois fora da base passam a ser recusados sem derrubar respondíveis. |

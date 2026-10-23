@@ -48,15 +48,17 @@ npm run eval -- --profile tuned    --label rodada-2
 npm run eval -- --profile final    --label rodada-3
 npm run eval -- --profile final    --label validacao-rodada-3 --dataset holdout
 npm run sweep -- --profile final
-LLM_PROVIDER=groq GROQ_API_KEY=... npm run eval -- --profile final --label groq-1
 npm run eval:compare
+# modelo aberto real (precisa de GROQ_API_KEY no ambiente) e reavaliação offline das respostas gravadas
+LLM_PROVIDER=groq npm run eval -- --profile final --label groq-1
+npm run rescore -- --from groq-1 --dataset dataset --write
 ```
 A avaliação usa a busca em memória (mesma métrica do pgvector, com paridade testada) e roda em segundos, sem rede.
 
 ## Rodada com um modelo aberto real (Groq)
-Rodei o perfil `final` com `LLM_PROVIDER=groq` (`openai/gpt-oss-120b`), nos dois conjuntos: `groq-1` (50 perguntas) e `validacao-groq-1` (20). Mesmo perfil e mesma busca da rodada 3; só o provedor muda. Resultado: 39/50 (78,0%) no desenvolvimento e 14/20 (70,0%) na validação, contra 43/50 e 16/20 com o mock. As diferenças aparecem na coluna `groq-1` do [comparativo](comparativo-rodadas.md).
+Rodei o perfil `final` com `LLM_PROVIDER=groq` (`openai/gpt-oss-120b`) nos dois conjuntos: `groq-1` (50 perguntas) e `validacao-groq-1` (20). Como rodou: 39/50 (78,0%) e 14/20 (70,0%). Ao ler as respostas, achei dois defeitos meus (espaço fino e negrito no avaliador; recusa do modelo não tratada no pipeline), corrigi e **reavaliei offline as mesmas respostas**: 45/50 (90,0%) e 18/20 (90,0%). Os vereditos das rodadas do Mock não mudaram com a correção (`npm run rescore` sobre elas dá 0 mudanças). Detalhes e ressalvas em [`relatorio-modelo-aberto.md`](relatorio-modelo-aberto.md).
 
-Ressalvas: **não é o Claude**, é uma única execução (o modelo não é determinístico, então outra rodada pode variar) e a correção continua sendo o proxy de fatos esperados. O relatório `relatorio-groq-1.md` registra `sem-commit` no campo Commit; a execução não gravou o hash, e não vou inventar um. Latência e custo desta rodada não foram analisados.
+Ressalvas: **não é o Claude**; uma única execução de um modelo não determinístico; a correção foi feita depois de ver os resultados; a correção continua sendo o proxy de fatos esperados. O relatório `relatorio-groq-1.md` registra `sem-commit` no campo Commit; a execução não gravou o hash, e não vou inventar um.
 
 ## Como rodar com o Claude real (campos em branco até alguém fazer)
 Veja [`relatorio-claude.md`](relatorio-claude.md).

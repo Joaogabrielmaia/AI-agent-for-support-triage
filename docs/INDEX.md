@@ -32,6 +32,7 @@ Volte ao [README](../README.md). Tudo aqui descreve um **estudo de caso com empr
 - [Análise de erros e decisões de ajuste](04-avaliacao/analise-de-erros.md)
 - [Varredura de limiar](04-avaliacao/varredura-limiar.txt)
 - Relatórios gerados: [rodada 1](04-avaliacao/relatorio-rodada-1.md) · [rodada 2](04-avaliacao/relatorio-rodada-2.md) · [rodada 3](04-avaliacao/relatorio-rodada-3.md) · validação [1](04-avaliacao/relatorio-validacao-rodada-1.md) · [2](04-avaliacao/relatorio-validacao-rodada-2.md) · [3](04-avaliacao/relatorio-validacao-rodada-3.md)
+- [Relatório com um modelo aberto real (Groq, não é o Claude)](04-avaliacao/relatorio-modelo-aberto.md) · relatórios gerados [groq-1](04-avaliacao/relatorio-groq-1.md) e [validação](04-avaliacao/relatorio-validacao-groq-1.md)
 - [Relatório com o Claude real (em branco, com instruções)](04-avaliacao/relatorio-claude.md)
 
 ## 05 · Qualidade

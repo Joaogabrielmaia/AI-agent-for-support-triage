@@ -14,6 +14,9 @@ export interface AgentDeps {
   articleCategory?: (slug: string) => string | undefined;
 }
 
+/** Frase que o prompt manda o modelo usar quando as fontes não bastam (ver SYSTEM_PROMPT). */
+const MODEL_ADMITS_NO_INFO = /^\W*n[aã]o tenho essa informa[cç][aã]o\W*$/i;
+
 export const MESSAGES = {
   refusal:
     "Não tenho essa informação na minha base de conhecimento, e prefiro não arriscar um palpite. Se quiser, posso encaminhar a sua dúvida para uma pessoa da equipe.",
@@ -136,6 +139,10 @@ export async function handleMessage(deps: AgentDeps, input: { question: string; 
   const sources = pickSources(hits, deps.config);
   try {
     const completion = await deps.provider.answer({ question, history, sources });
+    // O modelo seguiu o prompt e admitiu que não sabe: tratamos como recusa (RN-02), que oferece falar com uma pessoa.
+    if (MODEL_ADMITS_NO_INFO.test(completion.text.trim())) {
+      return { ...base, kind: "REFUSAL", text: MESSAGES.refusal, sources: [], confidence, category: "OUTROS", usage: completion.usage };
+    }
     const check = checkOutput(completion.text, sources);
     if (!check.ok) {
       const { handoff, usage } = await buildHandoff(

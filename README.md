@@ -15,7 +15,7 @@
 2. **Solução:** RAG sobre 31 artigos, com fontes citadas, recusa honesta ("não tenho essa informação"), escalonamento com resumo, categoria, prioridade e motivo, e guardrails contra injeção de prompt, vazamento de dados e promessa de reembolso.
 3. **Stack:** Next.js (App Router) + TypeScript, Tailwind, Prisma, PostgreSQL + pgvector, Zod, Docker Compose. Claude (API da Anthropic) atrás de uma interface, com um `MockProvider` determinístico.
 4. **Avaliação:** 50 perguntas de desenvolvimento + 20 de validação separadas. Três rodadas reais: **66% → 86% → 86%** no desenvolvimento e **70% → 80% → 80%** na validação.
-5. **Honestidade:** as rodadas usam o provedor simulado (sem chave de API no ambiente). Elas medem busca, limiar, escalonamento e guardrails, **não a redação do Claude**. A rodada com o Claude real está em branco, com o passo a passo.
+5. **Honestidade:** as rodadas 1 a 3 usam o provedor simulado e medem busca, limiar, escalonamento e guardrails. Rodei também um **modelo aberto real (Groq, `gpt-oss-120b`)**, descrito em [`relatorio-modelo-aberto.md`](docs/04-avaliacao/relatorio-modelo-aberto.md). **Nenhuma rodada usou o Claude**; essa continua em branco, com o passo a passo.
 
 ## Como o discovery foi feito
 As reuniões de discovery foram **simuladas**: o Claude interpretou a líder de suporte, um atendente e uma dona de salão, comigo conduzindo a conversa. Cada registro começa com a linha `> Simulação: o Claude interpretou o cliente nesta conversa.` Elas têm contradições (a líder quer reduzir o volume, o atendente teme perder o emprego), pedidos vagos que eu refino e uma restrição que muda o escopo (só o financeiro decide reembolso). O volume de chamados e o percentual de repetição são **premissas do caso**, não medições. Detalhes em [`docs/00-sobre-este-caso`](docs/00-sobre-este-caso/README.md).
@@ -110,7 +110,7 @@ O rascunho traz **só as perguntas reais** e campos `[PREENCHER]`. **Decisão:**
 ### 11. Relatório de avaliação
 ![Relatório de avaliação](docs/screenshots/10-relatorio-de-avaliacao.png)
 
-Todas as rodadas e as perguntas reprovadas, lidas de `docs/04-avaliacao/`. A linha "com o Claude real" mostra **não executada**.
+Todas as rodadas e as perguntas reprovadas, lidas de `docs/04-avaliacao/`. Há também a rodada com a Groq (reavaliada offline, com a ressalva explicada no relatório). A linha "com o Claude real" mostra **não executada**.
 
 ### 12. Versão mobile
 ![Mobile](docs/screenshots/11-versao-mobile-chat.png)
@@ -243,7 +243,7 @@ Preencha [`relatorio-claude.md`](docs/04-avaliacao/relatorio-claude.md). A chave
 
 ## Limitações e roadmap
 **Limitações (todas conhecidas e documentadas):**
-- **Nenhum número fala do Claude.** O provedor registrado é simulado; o `AnthropicProvider` existe mas **não foi exercitado**.
+- **Nenhum número fala do Claude.** Os números vêm do provedor simulado e de uma única execução da Groq (`gpt-oss-120b`); o `AnthropicProvider` existe mas **não foi exercitado**. A coluna "reavaliado" da Groq usa um avaliador que corrigi depois de ver os resultados.
 - **A busca é lexical, não semântica** ([ADR-002](docs/03-arquitetura/decisoes.md#adr-002--embeddings-locais-e-pgvector)). Os erros restantes são quase todos de vocabulário, e F01/F03 não se separam por limiar.
 - **Os adversariais foram escritos por mim**, e as regras de entrada também. 100% é um piso.
 - **Amostra pequena, mesmo autor:** 50 + 20 perguntas, escritas por mim.

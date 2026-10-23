@@ -36,6 +36,7 @@ function costEstimate(s: Summary): string {
 
 function renderReport(meta: Record<string, string>, s: Summary, scores: QuestionScore[], profileJson: string): string {
   const fails = scores.filter((x) => !x.pass);
+  const isMock = meta.Provedor === "mock";
   const L: string[] = [];
   L.push(`# Relatório de avaliação — ${meta.Rodada}`, "");
   L.push("> Gerado automaticamente por `npm run eval`. Os números abaixo vêm da execução registrada nos metadados; nada foi editado à mão.", "");
@@ -46,6 +47,11 @@ function renderReport(meta: Record<string, string>, s: Summary, scores: Question
   if (meta.Provedor === "mock") {
     L.push(
       "> **Leitura obrigatória:** esta execução usa o `MockProvider` (extrativo e determinístico) e a busca local por hashing. Ela mede **recuperação, limiar de confiança, escalonamento e guardrails**. Ela **não mede a qualidade de redação do Claude**. A rodada com o Claude real está em branco em `relatorio-claude.md` até alguém rodar com chave de API.",
+      "",
+    );
+  } else {
+    L.push(
+      `> **Leitura obrigatória:** esta execução usa o modelo real \`${meta.Provedor}\` com a mesma busca local por hashing. **Não é o Claude** (a rodada com o Claude segue em branco em \`relatorio-claude.md\`), é uma única execução de um modelo não determinístico, e a correção continua sendo o proxy de fatos esperados. Análise em \`relatorio-modelo-aberto.md\`.`,
       "",
     );
   }
@@ -65,7 +71,7 @@ function renderReport(meta: Record<string, string>, s: Summary, scores: Question
   L.push(`| Respondíveis | ${f2(s.confidence.answerable.min)} | ${f2(s.confidence.answerable.median)} | ${f2(s.confidence.answerable.max)} |`);
   L.push(`| Fora da base | ${f2(s.confidence.outOfKb.min)} | ${f2(s.confidence.outOfKb.median)} | ${f2(s.confidence.outOfKb.max)} |`, "");
   L.push("### Latência e custo", "");
-  L.push(`- Latência por pergunta (medida): mediana ${s.latencyMs.median.toFixed(1)} ms, máxima ${s.latencyMs.max.toFixed(1)} ms. Com o MockProvider isso não inclui chamada de rede.`);
+  L.push(`- Latência por pergunta (medida): mediana ${s.latencyMs.median.toFixed(1)} ms, máxima ${s.latencyMs.max.toFixed(1)} ms. ${isMock ? "Com o MockProvider isso não inclui chamada de rede." : "Inclui a chamada de rede ao provedor (e as retentativas após 429)."}`);
   L.push(`- Tokens aproximados (caracteres/4): ${s.tokens.input} de entrada, ${s.tokens.output} de saída, ${s.tokens.perConversation.toFixed(0)} por pergunta.`);
   L.push(`- Custo: ${costEstimate(s)}`, "");
   L.push("## Perguntas reprovadas", "");

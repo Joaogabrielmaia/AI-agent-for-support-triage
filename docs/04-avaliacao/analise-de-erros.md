@@ -55,5 +55,5 @@ O erro de R01 apareceu **ao vivo** ("Quanto custa o plano Profissional?" respond
 ## O que eu concluo
 1. **A decisão que mais valeu foi a confiança com cobertura.** Recusa correta foi de 20% a 80% e se manteve no conjunto de validação (60% → 80%).
 2. **O limite do desenho é a busca lexical.** Os erros que sobraram são quase todos de vocabulário. Mais regras e sinônimos só ajustariam as 50 perguntas que eu já vi.
-3. **Eu não sei como o Claude real se sairia.** A próxima medição que importa é rodar o mesmo harness com `LLM_PROVIDER=anthropic` ([instruções](relatorio-claude.md)).
+3. **Eu não sei como o Claude real se sairia.** Uma execução com a Groq (não é o Claude) mostrou que a maioria dos erros restantes é da busca, igual ao Mock ([relatório](relatorio-modelo-aberto.md)). A próxima medição que importa é rodar o mesmo harness com `LLM_PROVIDER=anthropic` ([instruções](relatorio-claude.md)).
 4. **A métrica "adversariais 100%" não é um troféu.** É um piso, dado que as regras foram escritas para esses ataques.

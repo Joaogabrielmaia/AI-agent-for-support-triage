@@ -20,6 +20,22 @@ beforeAll(() => {
   };
 });
 
+describe("quando o modelo admite que não sabe", () => {
+  it("vira recusa e não resposta (RN-02)", async () => {
+    const provider: LlmProvider = {
+      name: "fake",
+      answer: async () => ({ text: "Não tenho essa informação.", usage: { inputTokens: 10, outputTokens: 4 } }),
+      summarize: async () => ({ text: "", usage: { inputTokens: 0, outputTokens: 0 } }),
+      draftArticle: noDraft,
+    };
+    const r = await handleMessage({ ...deps, provider }, { question: "Esqueci minha senha, o que eu faço?" });
+    expect(r.kind).toBe("REFUSAL");
+    expect(r.text).toMatch(/encaminhar a sua dúvida/);
+    expect(r.sources).toEqual([]);
+    expect(r.usage.inputTokens).toBe(10);
+  });
+});
+
 describe("pipeline com MockProvider", () => {
   it("responde com fontes e categoria (RF-02, RF-03)", async () => {
     const r = await handleMessage(deps, { question: "Esqueci minha senha, o que eu faço?" });

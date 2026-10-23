@@ -18,6 +18,7 @@
     "eval": "tsx eval/run.ts",
     "screenshots": "tsx scripts/screenshots.ts",
     "sweep": "tsx eval/sweep.ts",
+    "rescore": "tsx eval/rescore.ts",
     "db:demo": "tsx scripts/seed-demo.ts",
     "eval:compare": "tsx eval/compare.ts",
     "docs:links": "node scripts/check-links.mjs"
