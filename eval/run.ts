@@ -51,14 +51,14 @@ function renderReport(meta: Record<string, string>, s: Summary, scores: Question
   }
   L.push("## Resultado geral", "", `**${s.passed} de ${s.total} perguntas aprovadas (${pct(s.passRate)}).**`, "");
   L.push("| Grupo | Métrica | Resultado |", "|---|---|---|");
-  L.push(`| 30 respondíveis | Correção (fatos esperados presentes) | ${pct(s.answerable.correctness)} |`);
-  L.push(`| 30 respondíveis | Fundamentação (cita o artigo certo) | ${pct(s.answerable.grounding)} |`);
-  L.push(`| 30 respondíveis | Respondeu (não recusou nem escalou) | ${pct(s.answerable.answeredRate)} |`);
-  L.push(`| 30 respondíveis | Artigo certo entre os trechos recuperados (hit@k) | ${pct(s.answerable.retrievalHitRate)} |`);
-  L.push(`| 30 respondíveis | Aprovadas (correto e fundamentado) | ${pct(s.answerable.passRate)} |`);
-  L.push(`| 10 fora da base | Recusa correta | ${pct(s.outOfKb.correctRefusal)} |`);
-  L.push(`| 10 fora da base | Respondeu sem base (erro grave) | ${pct(s.outOfKb.answeredWithoutBase)} |`);
-  L.push(`| 10 adversariais | Comportamento seguro | ${pct(s.adversarial.safe)} |`, "");
+  L.push(`| ${s.answerable.n} respondíveis | Correção (fatos esperados presentes) | ${pct(s.answerable.correctness)} |`);
+  L.push(`| ${s.answerable.n} respondíveis | Fundamentação (cita o artigo certo) | ${pct(s.answerable.grounding)} |`);
+  L.push(`| ${s.answerable.n} respondíveis | Respondeu (não recusou nem escalou) | ${pct(s.answerable.answeredRate)} |`);
+  L.push(`| ${s.answerable.n} respondíveis | Artigo certo entre os trechos recuperados (hit@k) | ${pct(s.answerable.retrievalHitRate)} |`);
+  L.push(`| ${s.answerable.n} respondíveis | Aprovadas (correto e fundamentado) | ${pct(s.answerable.passRate)} |`);
+  L.push(`| ${s.outOfKb.n} fora da base | Recusa correta | ${pct(s.outOfKb.correctRefusal)} |`);
+  L.push(`| ${s.outOfKb.n} fora da base | Respondeu sem base (erro grave) | ${pct(s.outOfKb.answeredWithoutBase)} |`);
+  L.push(`| ${s.adversarial.n} adversariais | Comportamento seguro | ${pct(s.adversarial.safe)} |`, "");
   L.push("### Adversariais por tipo", "", "| Tipo | Seguras | Total |", "|---|---|---|");
   for (const [k, v] of Object.entries(s.adversarial.bySubtype)) L.push(`| ${k} | ${v.safe} | ${v.n} |`);
   L.push("", "### Distribuição da confiança", "", "| Grupo | mín | mediana | máx |", "|---|---|---|---|");
@@ -90,7 +90,8 @@ async function main() {
   const profile = PROFILES[profileName];
   if (!profile) throw new Error(`Perfil desconhecido: ${profileName}. Use: ${Object.keys(PROFILES).join(", ")}`);
 
-  const questions = JSON.parse(fs.readFileSync(path.join(__dirname, "dataset.json"), "utf8")) as EvalQuestion[];
+  const datasetName = arg("dataset", "dataset");
+  const questions = JSON.parse(fs.readFileSync(path.join(__dirname, `${datasetName}.json`), "utf8")) as EvalQuestion[];
   const index = buildIndex(profile);
   const store = inMemoryStore(index);
   const provider = providerFromEnv();
@@ -115,6 +116,7 @@ async function main() {
     Trechos: `${index.chunks.length} trechos de ${index.articles.length} artigos`,
     Commit: gitCommit(),
     Data: new Date().toISOString(),
+    Conjunto: datasetName,
     Perguntas: String(questions.length),
   };
   fs.mkdirSync(outDir, { recursive: true });
