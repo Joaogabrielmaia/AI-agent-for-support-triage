@@ -3,7 +3,6 @@ import type { HashingEmbedder } from "./embedder";
 import { checkOutput, detectInjection, detectThirdPartyData, maskPii } from "./guardrails";
 import { ProviderError, type LlmProvider } from "./providers";
 import type { VectorStore } from "./store";
-import { tokenize } from "./text";
 import type { AgentConfig, AgentResult, Handoff, HistoryTurn, Hit, Source, TicketCategory, Usage } from "./types";
 
 export interface AgentDeps {
@@ -37,14 +36,14 @@ function addUsage(a: Usage, b: Usage): Usage {
 }
 
 /** RN-02: how sure the agent is that the retrieved text answers the question. */
-export function scoreConfidence(hits: Hit[], question: string, cfg: AgentConfig): number {
+export function scoreConfidence(hits: Hit[], question: string, cfg: AgentConfig, embedder: HashingEmbedder): number {
   if (!hits.length) return 0;
   const top = hits[0];
   if (cfg.confidenceMode === "top1") return top.score;
-  const q = [...new Set(tokenize(question))];
+  const q = [...new Set(embedder.tokens(question))];
   if (!q.length) return 0;
-  const chunkTokens = new Set(tokenize(top.chunk.embedText));
-  const coverage = q.filter((t) => chunkTokens.has(t)).length / q.length;
+  const chunkTokens = new Set(embedder.tokens(top.chunk.embedText));
+  const coverage = q.filter((t) => embedder.covers(t, chunkTokens)).length / q.length;
   return coverage >= cfg.minCoverage ? top.score : top.score * coverage;
 }
 
@@ -116,7 +115,7 @@ export async function handleMessage(deps: AgentDeps, input: { question: string; 
   } catch {
     hits = []; // modo de falha: busca indisponível => tratamos como sem confiança
   }
-  const confidence = scoreConfidence(hits, question, deps.config);
+  const confidence = scoreConfidence(hits, question, deps.config, deps.embedder);
   const kbCategory = hits[0] ? (deps.articleCategory?.(hits[0].chunk.articleSlug) ?? undefined) : undefined;
   const topCategory = confidence >= deps.config.threshold ? categoryFromKb(kbCategory) : "OUTROS";
 

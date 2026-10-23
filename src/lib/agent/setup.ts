@@ -14,14 +14,25 @@ export interface Profile {
 export const BASELINE_PROFILE: Profile = {
   name: "baseline",
   chunking: { strategy: "article", maxChars: 1500 },
-  embedder: { dim: EMBED_DIM, bigrams: false, synonyms: false },
+  embedder: { dim: EMBED_DIM, bigrams: false, synonyms: false, prefix: 0 },
   agent: { threshold: 0.15, topK: 4, confidenceMode: "top1", minCoverage: 0 },
 };
 
-export const PROFILES: Record<string, Profile> = { baseline: BASELINE_PROFILE };
+/**
+ * Round 2: changes motivated by the round-1 error analysis (docs/04-avaliacao/analise-de-erros.md).
+ * threshold/minCoverage are chosen with eval/sweep.ts and then checked on the separate validation set.
+ */
+export const TUNED_PROFILE: Profile = {
+  name: "tuned",
+  chunking: { strategy: "section", maxChars: 600 },
+  embedder: { dim: EMBED_DIM, bigrams: true, synonyms: true, prefix: 5 },
+  agent: { threshold: 0.16, topK: 4, confidenceMode: "top1+coverage", minCoverage: 0.4 },
+};
+
+export const PROFILES: Record<string, Profile> = { baseline: BASELINE_PROFILE, tuned: TUNED_PROFILE };
 
 /** The profile the app runs with. Updated after each evaluation round (see docs/04-avaliacao). */
-export const DEFAULT_PROFILE: Profile = BASELINE_PROFILE;
+export const DEFAULT_PROFILE: Profile = TUNED_PROFILE;
 
 export interface KbIndex {
   articles: Article[];

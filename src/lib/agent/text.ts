@@ -28,10 +28,14 @@ function stem(w: string): string {
   return w;
 }
 
-export function tokenize(text: string, opts: { keepStopwords?: boolean } = {}): string[] {
+export function tokenize(text: string, opts: { keepStopwords?: boolean; prefix?: number } = {}): string[] {
   const norm = stripAccents(text.toLowerCase());
   const raw = norm.match(/[a-z0-9]+/g) ?? [];
-  return raw.filter((t) => opts.keepStopwords || (!STOPWORDS.has(t) && t.length > 1)).map(stem);
+  const prefix = opts.prefix ?? 0;
+  return raw
+    .filter((t) => opts.keepStopwords || (!STOPWORDS.has(t) && t.length > 1))
+    .map(stem)
+    .map((t) => (prefix && t.length > prefix && !/[0-9]/.test(t) ? t.slice(0, prefix) : t));
 }
 
 export function estimateTokens(text: string): number {

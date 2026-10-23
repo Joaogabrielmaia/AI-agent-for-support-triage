@@ -7,13 +7,18 @@ export interface EmbedderOptions {
   bigrams: boolean;
   /** Query-side expansion with a small domain lexicon (see SYNONYMS). */
   synonyms: boolean;
+  /** Truncate stems to this many letters (0 = off). Joins gratis/gratuito, atendem/atendemos. */
+  prefix: number;
 }
 
 /** Small domain lexicon: colloquial term -> terms used in the knowledge base. */
 export const SYNONYMS: Record<string, string[]> = {
   mensalidade: ["plano", "preco", "fatura"],
   valor: ["preco", "custa"],
-  quanto: ["preco", "custa"],
+  gratis: ["gratuito", "teste"],
+  gratuito: ["gratis"],
+  telefonar: ["telefone"],
+  ligar: ["telefone"],
   custa: ["preco"],
   barato: ["preco", "plano"],
   desistir: ["cancelar"],
@@ -54,7 +59,7 @@ export class HashingEmbedder {
   private idf = new Map<string, number>();
   private defaultIdf = 1;
 
-  constructor(private readonly opts: EmbedderOptions = { dim: EMBED_DIM, bigrams: true, synonyms: false }) {}
+  constructor(private readonly opts: EmbedderOptions = { dim: EMBED_DIM, bigrams: true, synonyms: false, prefix: 0 }) {}
 
   get dim(): number {
     return this.opts.dim;
@@ -62,7 +67,7 @@ export class HashingEmbedder {
 
   fit(texts: string[]): this {
     const df = new Map<string, number>();
-    for (const t of texts) for (const w of new Set(tokenize(t))) df.set(w, (df.get(w) ?? 0) + 1);
+    for (const t of texts) for (const w of new Set(this.tokens(t))) df.set(w, (df.get(w) ?? 0) + 1);
     const n = texts.length;
     this.idf = new Map([...df].map(([w, d]) => [w, Math.log((n + 1) / (d + 1)) + 1]));
     this.defaultIdf = Math.log(n + 1) + 1;
@@ -73,15 +78,26 @@ export class HashingEmbedder {
     return this.idf.get(token) ?? this.defaultIdf;
   }
 
+  tokens(text: string): string[] {
+    return tokenize(text, { prefix: this.opts.prefix });
+  }
+
+  /** Is this query token (or one of its synonyms) present in the chunk token set? */
+  covers(token: string, chunkTokens: Set<string>): boolean {
+    if (chunkTokens.has(token)) return true;
+    if (!this.opts.synonyms) return false;
+    return this.expand([token]).some((t) => chunkTokens.has(t));
+  }
+
   expand(tokens: string[]): string[] {
     if (!this.opts.synonyms) return tokens;
     const extra: string[] = [];
-    for (const t of tokens) for (const s of SYNONYMS[t] ?? []) extra.push(...tokenize(s));
+    for (const t of tokens) for (const s of SYNONYMS[t] ?? []) extra.push(...this.tokens(s));
     return [...tokens, ...extra];
   }
 
   embed(text: string, isQuery = false): number[] {
-    let tokens = tokenize(text);
+    let tokens = this.tokens(text);
     if (isQuery) tokens = this.expand(tokens);
     const v = new Array<number>(this.opts.dim).fill(0);
     const add = (feature: string, w: number) => {
