@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Transcript } from "@/components/transcript";
 import { db } from "@/lib/server/db";
+import { rateAction } from "../../actions";
 
 export const metadata = { title: "Conversa · Prumo" };
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
           </Link>
         </p>
       )}
-      <Transcript messages={conv.messages} returnPath={`/conversas/${conv.id}`} />
+      <Transcript rateAction={rateAction} messages={conv.messages} returnPath={`/conversas/${conv.id}`} />
     </div>
   );
 }

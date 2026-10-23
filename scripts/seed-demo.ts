@@ -4,7 +4,7 @@ import { processCustomerMessage, escalateConversation } from "../src/lib/server/
 /**
  * Dados de demonstração: perguntas fictícias passam pelo agente de verdade (mesmas regras do app).
  * Servem para popular a fila e o painel nos prints. Não são medições de uso real.
- * Todas as conversas ficam marcadas com isDemo = true.
+ * As conversas ficam marcadas com isDemo = true. Rodar de novo apaga TODAS as conversas e recria as de demonstração.
  */
 const db = new PrismaClient();
 
@@ -43,7 +43,7 @@ const DEMO: { customer: string; turns: string[]; askHumanAfter?: boolean }[] = [
 ];
 
 async function main() {
-  await db.conversation.deleteMany({ where: { isDemo: true } });
+  await db.conversation.deleteMany(); // reinicia a fila: apaga todas as conversas, inclusive as criadas nos testes
   for (const d of DEMO) {
     let last = "";
     for (const [i, t] of d.turns.entries()) {

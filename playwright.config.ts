@@ -6,9 +6,9 @@ export default defineConfig({
   workers: 1,
   use: { baseURL: "http://localhost:3000", trace: "off" },
   webServer: {
-    command: "npm run dev",
+    command: "npm run build && npm run start",
     url: "http://localhost:3000/login",
     reuseExistingServer: true,
-    timeout: 120_000,
+    timeout: 300_000,
   },
 });

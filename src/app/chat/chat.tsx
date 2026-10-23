@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 interface SourceView {
@@ -120,9 +121,9 @@ export default function Chat() {
           <h1 className="text-lg font-bold text-prumo-900">Suporte Agenda Bela</h1>
           <p className="text-xs text-slate-700">Assistente automático. Não confirmo valores, reembolsos nem prazos fora da base.</p>
         </div>
-        <a href="/" className="text-sm font-medium text-prumo-600 underline">
+        <Link href="/" className="text-sm font-medium text-prumo-600 underline">
           Início
-        </a>
+        </Link>
       </header>
 
       <div className="card flex-1 space-y-3 overflow-y-auto" role="log" aria-live="polite" aria-label="Conversa com o assistente" data-testid="chat-log">

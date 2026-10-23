@@ -1,5 +1,4 @@
 import type { Message } from "@prisma/client";
-import { rateAction } from "@/app/(staff)/actions";
 import { Pill } from "@/components/ui";
 
 interface SrcView {
@@ -11,7 +10,7 @@ interface SrcView {
 const KIND_LABEL = { ANSWER: "Resposta", REFUSAL: "Sem informação", ESCALATION: "Encaminhamento", BLOCKED: "Bloqueado" } as const;
 
 /** Conversation as the attendant sees it: sources, confidence, masked data and the correct/incorrect rating (RF-09). */
-export function Transcript({ messages, returnPath }: { messages: Message[]; returnPath: string }) {
+export function Transcript({ messages, returnPath, rateAction }: { messages: Message[]; returnPath: string; rateAction: (formData: FormData) => Promise<void> }) {
   return (
     <div className="card space-y-3" data-testid="transcript">
       <h2 className="text-lg font-semibold">Conversa</h2>

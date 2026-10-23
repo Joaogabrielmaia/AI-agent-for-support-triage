@@ -4,7 +4,7 @@ import { CATEGORY_LABELS, PRIORITY_LABELS } from "@/lib/agent/escalation";
 import { Pill, PriorityBadge, fmtDate } from "@/components/ui";
 import { db } from "@/lib/server/db";
 import { Transcript } from "@/components/transcript";
-import { replyAction, setStatusAction } from "../../actions";
+import { rateAction, replyAction, setStatusAction } from "../../actions";
 
 export const metadata = { title: "Chamado · Prumo" };
 export const dynamic = "force-dynamic";
@@ -70,7 +70,7 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
       </section>
 
       <section className="space-y-4 lg:col-span-2" aria-label="Conversa">
-        <Transcript messages={ticket.conversation.messages} returnPath={`/tickets/${ticket.id}`} />
+        <Transcript rateAction={rateAction} messages={ticket.conversation.messages} returnPath={`/tickets/${ticket.id}`} />
 
         <form action={replyAction} className="card space-y-3">
           <input type="hidden" name="ticketId" value={ticket.id} />

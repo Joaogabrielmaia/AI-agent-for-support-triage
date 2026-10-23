@@ -42,5 +42,4 @@ export async function rateAction(formData: FormData) {
   const data = Rate.parse({ messageId: formData.get("messageId"), path: formData.get("path"), rating: formData.get("rating") });
   await db.message.update({ where: { id: data.messageId }, data: { rating: data.rating, ratedById: user.id, ratedAt: new Date() } });
   revalidatePath(data.path);
-  revalidatePath("/painel");
 }
