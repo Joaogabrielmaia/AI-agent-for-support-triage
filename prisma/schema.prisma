@@ -58,6 +58,12 @@ enum Priority {
   URGENTE
 }
 
+enum SuggestionStatus {
+  PENDING
+  ACCEPTED
+  DISCARDED
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -138,4 +144,16 @@ model Ticket {
   resolvedAt     DateTime?
 
   @@index([status, priority])
+}
+
+/// v1.1: rascunho de artigo sugerido a partir de uma lacuna repetida da base.
+model ArticleSuggestion {
+  id          String           @id @default(cuid())
+  title       String
+  questions   String[]
+  occurrences Int
+  draft       String
+  status      SuggestionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  decidedAt   DateTime?
 }

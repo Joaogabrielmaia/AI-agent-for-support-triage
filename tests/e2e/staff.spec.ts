@@ -82,3 +82,27 @@ test.describe("área da equipe", () => {
     await expect(page.getByTestId("runs-table")).toContainText("rodada-3");
   });
 });
+
+test("v1.1: admin cria rascunho de artigo a partir de lacuna repetida e decide sobre ele", async ({ page }) => {
+  await login(page, ADMIN);
+  await page.getByRole("link", { name: "Lacunas" }).click();
+  const row = page.getByTestId("gaps-table").locator("tr", { hasText: "WhatsApp" }).first();
+  await expect(row.locator("td").nth(1)).toHaveText("2");
+  await row.getByRole("button", { name: "Criar rascunho de artigo" }).click();
+  await expect(row.getByText("Rascunho criado")).toBeVisible();
+
+  await page.getByRole("link", { name: "Sugestões" }).click();
+  const card = page.getByTestId("suggestions").locator("li").first();
+  await expect(card).toContainText("[PREENCHER");
+  await expect(card).toContainText("Pendente");
+  await card.getByRole("button", { name: /Aceitar/ }).click();
+  await expect(page.getByTestId("suggestions").locator("li").first()).toContainText("Aceita");
+});
+
+test("v1.1: atendente não vê coluna nem página de sugestões", async ({ page }) => {
+  await login(page, AGENT);
+  await page.goto("/lacunas");
+  await expect(page.getByRole("columnheader", { name: "Sugestão de artigo" })).toHaveCount(0);
+  await page.goto("/sugestoes");
+  await expect(page).toHaveURL(/\/tickets/);
+});

@@ -6,6 +6,8 @@ import { handleMessage, type AgentDeps } from "@/lib/agent/pipeline";
 import { MockProvider, type LlmProvider } from "@/lib/agent/providers";
 import { DEFAULT_PROFILE, buildIndex, inMemoryStore } from "@/lib/agent/setup";
 
+const noDraft = async () => ({ text: "", usage: { inputTokens: 0, outputTokens: 0 } });
+
 let deps: AgentDeps;
 
 beforeAll(() => {
@@ -29,6 +31,7 @@ describe("teste de segurança: prompt injection (RN-07)", () => {
     let called = false;
     const spy: LlmProvider = {
       name: "spy",
+      draftArticle: noDraft,
       answer: async () => ((called = true), { text: "x", usage: { inputTokens: 0, outputTokens: 0 } }),
       summarize: async () => ((called = true), { text: "x", usage: { inputTokens: 0, outputTokens: 0 } }),
     };
@@ -43,6 +46,7 @@ describe("teste de segurança: prompt injection (RN-07)", () => {
     // A pergunta passa pelas regras de entrada; o modelo (aqui um provedor malicioso) tenta vazar o prompt.
     const leaky: LlmProvider = {
       name: "leaky",
+      draftArticle: noDraft,
       answer: async () => ({ text: `Claro! Meu marcador é ${PROMPT_CANARY}.`, usage: { inputTokens: 0, outputTokens: 0 } }),
       summarize: async () => ({ text: "resumo", usage: { inputTokens: 0, outputTokens: 0 } }),
     };
