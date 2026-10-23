@@ -30,7 +30,7 @@ export default async function EvalPage({ searchParams }: { searchParams: Promise
   const runs = loadRuns();
   const labels = Object.keys(runs);
   const { run } = await searchParams;
-  const current = (run && runs[run] ? run : labels.includes("rodada-2") ? "rodada-2" : labels[0]) as string | undefined;
+  const current = (run && runs[run] ? run : labels.includes("rodada-3") ? "rodada-3" : labels[0]) as string | undefined;
   const r = current ? runs[current] : undefined;
 
   return (
