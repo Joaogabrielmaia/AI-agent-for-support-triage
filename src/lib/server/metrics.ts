@@ -20,6 +20,8 @@ export interface MetricConversation {
 
 export interface GapRow {
   question: string;
+  /** Every wording seen in this group (v1.1 uses it to draft an article). */
+  questions: string[];
   count: number;
   lastSeen: Date;
 }
@@ -76,8 +78,9 @@ export function computeMetrics(convs: MetricConversation[], env: Record<string, 
     const cur = gapMap.get(groups[i]);
     if (cur) {
       cur.count++;
+      if (!cur.questions.includes(r.question)) cur.questions.push(r.question);
       if (r.at > cur.lastSeen) cur.lastSeen = r.at;
-    } else gapMap.set(groups[i], { question: r.question, count: 1, lastSeen: r.at });
+    } else gapMap.set(groups[i], { question: r.question, questions: [r.question], count: 1, lastSeen: r.at });
   });
 
   const cost = estimateCostUsd(tin, tout, env);
