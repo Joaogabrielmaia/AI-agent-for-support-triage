@@ -35,6 +35,15 @@ export interface LlmProvider {
 
 export class ProviderError extends Error {}
 
+class RateLimitError extends Error {
+  constructor(
+    message: string,
+    readonly waitMs: number,
+  ) {
+    super(message);
+  }
+}
+
 export const DRAFT_NOTICE =
   "Rascunho gerado automaticamente a partir de perguntas reais. Ele não contém fatos: a equipe precisa preencher cada [PREENCHER] com informação confirmada antes de publicar.";
 
@@ -167,7 +176,84 @@ export class AnthropicProvider implements LlmProvider {
   }
 }
 
+/** Groq (API compatível com a da OpenAI), usada para rodar a avaliação com um modelo aberto real. */
+export class GroqProvider implements LlmProvider {
+  readonly name: string;
+
+  constructor(
+    private readonly apiKey: string,
+    private readonly model = "openai/gpt-oss-120b",
+    /** Tentativas extras quando a Groq responde 429 (limite de tokens por minuto da camada gratuita). */
+    private readonly retries = 5,
+  ) {
+    if (!apiKey) throw new ProviderError("GROQ_API_KEY não configurada");
+    this.name = `groq:${model}`;
+  }
+
+  private async call(system: string, user: string, maxTokens: number): Promise<Completion> {
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this.callOnce(system, user, maxTokens);
+      } catch (e) {
+        if (!(e instanceof RateLimitError) || attempt >= this.retries) throw e instanceof RateLimitError ? new ProviderError(e.message) : e;
+        await new Promise((r) => setTimeout(r, e.waitMs));
+      }
+    }
+  }
+
+  private async callOnce(system: string, user: string, maxTokens: number): Promise<Completion> {
+    let res: Response;
+    try {
+      res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${this.apiKey}` },
+        body: JSON.stringify({
+          model: this.model,
+          max_completion_tokens: maxTokens,
+          reasoning_effort: "low",
+          temperature: 0,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+        }),
+        signal: AbortSignal.timeout(30_000),
+      });
+    } catch (e) {
+      throw new ProviderError(`Falha de rede ao chamar a Groq: ${(e as Error).message}`);
+    }
+    if (res.status === 429) {
+      const wait = Number(res.headers.get("retry-after")) || 20;
+      throw new RateLimitError("Groq respondeu 429", Math.min(wait, 60) * 1000 + 500);
+    }
+    if (!res.ok) throw new ProviderError(`Groq respondeu ${res.status}`);
+    const json = (await res.json()) as {
+      choices?: { message?: { content?: string | null } }[];
+      usage?: { prompt_tokens?: number; completion_tokens?: number };
+    };
+    const text = (json.choices?.[0]?.message?.content ?? "").trim();
+    if (!text) throw new ProviderError("Groq devolveu resposta vazia");
+    return { text, usage: { inputTokens: json.usage?.prompt_tokens ?? 0, outputTokens: json.usage?.completion_tokens ?? 0 } };
+  }
+
+  answer(req: AnswerRequest): Promise<Completion> {
+    const fontes = req.sources.map((s, i) => `<fonte id="${i + 1}" titulo="${s.title}">${s.snippet}</fonte>`).join("\n");
+    const hist = req.history.map((t) => `${t.role === "CUSTOMER" ? "Cliente" : "Agente"}: ${t.content}`).join("\n");
+    return this.call(SYSTEM_PROMPT, `<fontes>\n${fontes}\n</fontes>\n<historico>\n${hist}\n</historico>\n<pergunta>${req.question}</pergunta>`, 1200);
+  }
+
+  summarize(req: SummaryRequest): Promise<Completion> {
+    return this.call(SUMMARY_PROMPT, summaryTemplate(req), 800);
+  }
+
+  async draftArticle(req: DraftRequest): Promise<Completion> {
+    const out = await this.call(DRAFT_PROMPT, req.questions.map((q) => `- ${q}`).join("\n"), 1500);
+    return { ...out, text: `> ${DRAFT_NOTICE}\n\n${out.text}` };
+  }
+}
+
 export function providerFromEnv(env: NodeJS.ProcessEnv = process.env): LlmProvider {
   if (env.LLM_PROVIDER === "anthropic") return new AnthropicProvider(env.ANTHROPIC_API_KEY ?? "", env.ANTHROPIC_MODEL);
+  if (env.LLM_PROVIDER === "groq") return new GroqProvider(env.GROQ_API_KEY ?? "", env.GROQ_MODEL);
   return new MockProvider();
 }

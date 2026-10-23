@@ -37,7 +37,7 @@ function costEstimate(s: Summary): string {
 function renderReport(meta: Record<string, string>, s: Summary, scores: QuestionScore[], profileJson: string): string {
   const fails = scores.filter((x) => !x.pass);
   const L: string[] = [];
-  L.push(`# Relatório de avaliação — ${meta.label}`, "");
+  L.push(`# Relatório de avaliação — ${meta.Rodada}`, "");
   L.push("> Gerado automaticamente por `npm run eval`. Os números abaixo vêm da execução registrada nos metadados; nada foi editado à mão.", "");
   L.push("## Metadados da execução", "");
   L.push("| Campo | Valor |", "|---|---|");

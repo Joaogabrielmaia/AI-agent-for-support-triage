@@ -22,7 +22,7 @@ A avaliação é o diferencial deste projeto, então vale explicar exatamente o 
 Além disso, o relatório registra **hit@k** (o artigo certo está entre os trechos recuperados, independentemente do que foi respondido), que separa erro de busca de erro de resposta.
 
 ## O que o resultado **não** significa
-1. **O provedor registrado é o `MockProvider`.** Ele é extrativo: copia frases dos trechos recuperados. Portanto os números medem **busca, limiar de confiança, escalonamento e guardrails**, e **não** a qualidade da redação, da síntese nem do seguimento de instruções de um modelo de verdade.
+1. **As rodadas 1 a 3 usam o `MockProvider`.** Ele é extrativo: copia frases dos trechos recuperados. Portanto os números medem **busca, limiar de confiança, escalonamento e guardrails**, e **não** a qualidade da redação, da síntese nem do seguimento de instruções de um modelo de verdade.
 2. **Correção por fatos esperados é um proxy.** Uma resposta pode conter o fato e estar mal explicada, e pode estar certa sem conter o trecho literal esperado. Sem o Claude, não há juiz de qualidade de texto aqui.
 3. **Os adversariais não provam robustez.** As regras de entrada foram escritas por mim, conhecendo os tipos de ataque. 100% quer dizer "cobre os ataques que eu imaginei" (ver [ADR-007](../03-arquitetura/decisoes.md#adr-007--prompt-injection)).
 4. **Amostra pequena, mesmo autor.** 50 + 20 perguntas, escritas por mim. Uma pergunta vale 2 pontos percentuais no conjunto de 50 e 5 no de 20.
@@ -48,9 +48,15 @@ npm run eval -- --profile tuned    --label rodada-2
 npm run eval -- --profile final    --label rodada-3
 npm run eval -- --profile final    --label validacao-rodada-3 --dataset holdout
 npm run sweep -- --profile final
+LLM_PROVIDER=groq GROQ_API_KEY=... npm run eval -- --profile final --label groq-1
 npm run eval:compare
 ```
 A avaliação usa a busca em memória (mesma métrica do pgvector, com paridade testada) e roda em segundos, sem rede.
+
+## Rodada com um modelo aberto real (Groq)
+Rodei o perfil `final` com `LLM_PROVIDER=groq` (`openai/gpt-oss-120b`), nos dois conjuntos: `groq-1` (50 perguntas) e `validacao-groq-1` (20). Mesmo perfil e mesma busca da rodada 3; só o provedor muda. Resultado: 39/50 (78,0%) no desenvolvimento e 14/20 (70,0%) na validação, contra 43/50 e 16/20 com o mock. As diferenças aparecem na coluna `groq-1` do [comparativo](comparativo-rodadas.md).
+
+Ressalvas: **não é o Claude**, é uma única execução (o modelo não é determinístico, então outra rodada pode variar) e a correção continua sendo o proxy de fatos esperados. O relatório `relatorio-groq-1.md` registra `sem-commit` no campo Commit; a execução não gravou o hash, e não vou inventar um. Latência e custo desta rodada não foram analisados.
 
 ## Como rodar com o Claude real (campos em branco até alguém fazer)
 Veja [`relatorio-claude.md`](relatorio-claude.md).
