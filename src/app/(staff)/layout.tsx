@@ -15,6 +15,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     { href: "/conversas", label: "Conversas", admin: false },
     { href: "/lacunas", label: "Lacunas", admin: false },
     { href: "/painel", label: "Painel", admin: true },
+    { href: "/sugestoes", label: "Sugestões", admin: true },
     { href: "/base", label: "Base", admin: true },
     { href: "/avaliacao", label: "Avaliação", admin: true },
   ].filter((l) => !l.admin || user.role === "ADMIN");

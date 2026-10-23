@@ -25,6 +25,7 @@ const DEMO: { customer: string; turns: string[]; askHumanAfter?: boolean }[] = [
   { customer: "Elaine (Salão Encanto)", turns: ["Vocês têm integração com WhatsApp para enviar os lembretes?"], askHumanAfter: true },
   { customer: "Simone (Espaço Zen)", turns: ["Dá para mandar lembrete pelo WhatsApp da clínica?"] },
   { customer: "Priscila (Studio Charme)", turns: ["Vocês integram com WhatsApp?"] },
+  { customer: "Maira (Espaço Lírio)", turns: ["Tem integração com o WhatsApp?"] },
   { customer: "Carla (Salão Glamour)", turns: ["A Agenda Bela integra com o iFood?"] },
   { customer: "Sônia (Clínica Equilíbrio)", turns: ["Posso usar o sistema em inglês ou espanhol?"] },
   { customer: "Rafaela (Salão Marés)", turns: ["Quando vai sair o módulo de prontuário eletrônico?"] },
@@ -43,6 +44,7 @@ const DEMO: { customer: string; turns: string[]; askHumanAfter?: boolean }[] = [
 ];
 
 async function main() {
+  await db.articleSuggestion.deleteMany();
   await db.conversation.deleteMany(); // reinicia a fila: apaga todas as conversas, inclusive as criadas nos testes
   for (const d of DEMO) {
     let last = "";

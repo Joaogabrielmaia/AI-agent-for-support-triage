@@ -4,6 +4,8 @@ import { MockProvider, ProviderError, type LlmProvider } from "@/lib/agent/provi
 import { DEFAULT_PROFILE, buildIndex, inMemoryStore } from "@/lib/agent/setup";
 import type { VectorStore } from "@/lib/agent/store";
 
+const noDraft = async () => ({ text: "", usage: { inputTokens: 0, outputTokens: 0 } });
+
 let deps: AgentDeps;
 
 beforeAll(() => {
@@ -58,6 +60,7 @@ describe("pipeline com MockProvider", () => {
   it("não deixa o cliente sem resposta quando o provedor falha (modo de falha)", async () => {
     const down: LlmProvider = {
       name: "down",
+      draftArticle: noDraft,
       answer: async () => {
         throw new ProviderError("API fora");
       },
@@ -84,6 +87,7 @@ describe("pipeline com MockProvider", () => {
   it("filtro de saída transforma resposta com promessa em encaminhamento (RN-08/09)", async () => {
     const promiser: LlmProvider = {
       name: "promiser",
+      draftArticle: noDraft,
       answer: async () => ({ text: "Vamos reembolsar o valor ainda hoje, garantimos.", usage: { inputTokens: 1, outputTokens: 1 } }),
       summarize: async () => ({ text: "resumo", usage: { inputTokens: 1, outputTokens: 1 } }),
     };
@@ -96,6 +100,7 @@ describe("pipeline com MockProvider", () => {
   it("filtro de saída bloqueia preço inventado pelo modelo", async () => {
     const liar: LlmProvider = {
       name: "liar",
+      draftArticle: noDraft,
       answer: async () => ({ text: "O plano Profissional custa R$ 49 por mês.", usage: { inputTokens: 1, outputTokens: 1 } }),
       summarize: async () => ({ text: "resumo", usage: { inputTokens: 1, outputTokens: 1 } }),
     };

@@ -1,6 +1,6 @@
 {
   "name": "prumo",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Prumo: agente de IA para triagem de suporte da Agenda Bela (estudo de caso)",
   "license": "MIT",

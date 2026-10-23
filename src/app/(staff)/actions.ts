@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { hasPendingSuggestion, suggestionTitle } from "@/lib/agent/suggestions";
+import { getAgent } from "@/lib/server/agent";
 import { requireUser } from "@/lib/server/auth";
 import { db } from "@/lib/server/db";
 
@@ -32,6 +34,32 @@ export async function setStatusAction(formData: FormData) {
   });
   revalidatePath(`/tickets/${data.ticketId}`);
   revalidatePath("/tickets");
+}
+
+const Suggest = z.object({ questions: z.array(z.string().min(1).max(1000)).min(1).max(30) });
+
+/** v1.1: turns a repeated gap into an article draft for the team to complete (admin only). */
+export async function createSuggestionAction(formData: FormData) {
+  await requireUser(["ADMIN"]);
+  const { questions } = Suggest.parse({ questions: JSON.parse(String(formData.get("questions"))) });
+  const pending = await db.articleSuggestion.findMany({ where: { status: "PENDING" }, select: { questions: true } });
+  if (hasPendingSuggestion({ question: questions[0], questions, count: questions.length }, pending)) return;
+  const draft = await getAgent().provider.draftArticle({ questions });
+  await db.articleSuggestion.create({
+    data: { title: suggestionTitle(questions), questions, occurrences: Number(formData.get("count")) || questions.length, draft: draft.text },
+  });
+  revalidatePath("/lacunas");
+  revalidatePath("/sugestoes");
+}
+
+const Decide = z.object({ id: z.string().min(1), status: z.enum(["ACCEPTED", "DISCARDED"]) });
+
+export async function decideSuggestionAction(formData: FormData) {
+  await requireUser(["ADMIN"]);
+  const data = Decide.parse({ id: formData.get("id"), status: formData.get("status") });
+  await db.articleSuggestion.update({ where: { id: data.id }, data: { status: data.status, decidedAt: new Date() } });
+  revalidatePath("/sugestoes");
+  revalidatePath("/lacunas");
 }
 
 const Rate = z.object({ messageId: z.string().min(1), path: z.string().startsWith("/").max(200), rating: z.enum(["CORRECT", "INCORRECT"]) });

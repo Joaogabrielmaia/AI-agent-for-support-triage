@@ -41,7 +41,7 @@ async function main() {
 
   const c2 = await ctx.newPage();
   await c2.goto("/chat");
-  await ask(c2, "Vocês têm integração com WhatsApp para enviar os lembretes?");
+  await ask(c2, "Vocês integram com WhatsApp?");
   await shot(c2, "02-recusa-honesta");
 
   const c3 = await ctx.newPage();
@@ -89,6 +89,11 @@ async function main() {
   await shot(a, "07-painel", { fullPage: true });
   await a.goto("/avaliacao");
   await shot(a, "10-relatorio-de-avaliacao", { fullPage: true });
+  await a.goto("/lacunas");
+  await a.getByTestId("gaps-table").locator("tr", { hasText: "WhatsApp" }).first().getByRole("button", { name: "Criar rascunho de artigo" }).click();
+  await a.goto("/sugestoes");
+  await a.getByTestId("suggestions").waitFor();
+  await shot(a, "13-sugestao-de-artigo-v1.1", { fullPage: true });
   await a.goto("/base");
   await shot(a, "12-base-de-conhecimento", { fullPage: true });
   await browser.close();
