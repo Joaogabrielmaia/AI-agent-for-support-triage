@@ -1,0 +1,7 @@
+# Execução real — 2026-10-23T13:20:17-03:00 — commit 1640e4a
+$ npx tsc --noEmit
+(sem erros de tipo)
+$ npm run lint
+> next lint
+
+✔ No ESLint warnings or errors

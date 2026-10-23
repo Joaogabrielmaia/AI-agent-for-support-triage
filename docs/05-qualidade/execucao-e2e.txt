@@ -1,0 +1,21 @@
+# Execução real — 2026-10-23T13:20:30-03:00 — commit 1640e4a
+$ npm run test:e2e (contra o build de produção)
+
+Running 14 tests using 1 worker
+
+  ✓  1 customer-chat.spec.ts:5:7 › chat do cliente › pergunta respondível: resposta com fontes citadas (RF-02, RF-03) (1.8s)
+  ✓  2 customer-chat.spec.ts:13:7 › chat do cliente › pergunta fora da base: recusa honesta e pedido de atendente (RF-04, RF-08) (643ms)
+  ✓  3 customer-chat.spec.ts:25:7 › chat do cliente › pedido sensível: escalonamento sem prometer reembolso (RF-05, RN-09) (460ms)
+  ✓  4 customer-chat.spec.ts:34:7 › chat do cliente › prompt injection é bloqueada (RN-07) (454ms)
+  ✓  5 customer-chat.spec.ts:42:7 › chat do cliente › erro do servidor: o chat mostra um alerta e continua utilizável (estado de erro) (365ms)
+  ✓  6 customer-chat.spec.ts:50:7 › chat do cliente › mobile: o chat cabe na tela sem rolagem horizontal (487ms)
+  ✓  7 staff.spec.ts:5:7 › área da equipe › rotas da equipe exigem login (RNF-05) (297ms)
+  ✓  8 staff.spec.ts:12:7 › área da equipe › login com senha errada mostra erro genérico (430ms)
+  ✓  9 staff.spec.ts:20:7 › área da equipe › atendente não acessa o painel (papéis) (540ms)
+  ✓  10 staff.spec.ts:27:7 › área da equipe › fila: filtros, detalhe com resumo/motivo, resposta ao cliente e avaliação (RF-06..RF-09) (1.8s)
+  ✓  11 staff.spec.ts:59:7 › área da equipe › conversa resolvida pelo agente pode ser avaliada como incorreta (779ms)
+  ✓  12 staff.spec.ts:68:7 › área da equipe › admin vê painel, lacunas, base e avaliação (RF-10, RF-11, RF-12) (1.0s)
+  ✓  13 staff.spec.ts:86:5 › v1.1: admin cria rascunho de artigo a partir de lacuna repetida e decide sobre ele (904ms)
+  ✓  14 staff.spec.ts:102:5 › v1.1: atendente não vê coluna nem página de sugestões (609ms)
+
+  14 passed (13.2s)

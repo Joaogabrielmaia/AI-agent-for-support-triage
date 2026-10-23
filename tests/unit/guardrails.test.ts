@@ -41,7 +41,7 @@ describe("detectInjection (RN-07)", () => {
     expect(detectInjection(q)).toBe("prompt_injection");
   });
 
-  it("não bloqueia nenhuma das 30 perguntas legítimas do conjunto de avaliação (falso positivo)", () => {
+  it("não bloqueia nenhuma das 40 perguntas legítimas do conjunto de avaliação (falso positivo)", () => {
     const ds = JSON.parse(fs.readFileSync(path.join(process.cwd(), "eval", "dataset.json"), "utf8")) as { type: string; question: string }[];
     const legit = ds.filter((q) => q.type !== "adversarial");
     expect(legit.length).toBe(40);
