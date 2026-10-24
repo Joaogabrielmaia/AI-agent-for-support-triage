@@ -13,13 +13,14 @@ Série **"Como medir, limitar e melhorar um agente de IA de suporte"**, sobre o 
 | 5 · Qualidade | Resultados dos testes por commit, aceitação simulada, reviews | [docs/05](05-qualidade/README.md) |
 | 6 · Pós-lançamento | v1.1, retrospectiva simulada, roadmap | [docs/06](06-pos-lancamento/README.md) |
 | Galeria | 13 prints do sistema, na ordem do fluxo | [screenshots](screenshots/README.md) |
+| Ciclo de vida | Relatório do discovery à evolução: Scrum, requisitos, arquitetura, dados, testes, implantação | [ciclo-de-vida](ciclo-de-vida/README.md) |
 
 ## Trilhas de leitura
 **Em 2 minutos**
 1. [README](../README.md)
 2. [Chat com resposta e fontes](screenshots/01-chat-resposta-com-fontes.png)
 3. [Recusa honesta](screenshots/02-recusa-honesta.png)
-4. [Tabela das rodadas](../README.md#evidências)
+4. [Tabela das rodadas](../README.md#estratégia-de-testes-e-evidências-de-qualidade)
 
 **Em 10 minutos** (os de 2 minutos, mais)
 1. [Análise de erros](04-avaliacao/analise-de-erros.md)
