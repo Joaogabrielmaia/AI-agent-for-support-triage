@@ -1,8 +1,8 @@
 # Reunião de aceitação (simulada) com resultado real
 
-> Simulação: o Claude interpretou o cliente nesta conversa.
+> Reunião simulada; pessoas e empresa fictícias.
 
-**Participantes:** João (eu), Renata Alves (líder de suporte), Carlos Nogueira (atendente) e Marina Lopes (cliente-tipo), todos interpretados pelo Claude.
+**Participantes:** João (eu), Renata Alves (líder de suporte), Carlos Nogueira (atendente) e Marina Lopes (cliente-tipo); as três pessoas são personagens fictícios.
 **Como foi conduzida:** passei por cada história de [`historias-e-moscow.md`](../02-definicao/historias-e-moscow.md) e mostrei a **evidência real** (teste, print ou relatório). As falas são simuladas. **O que está na coluna "Evidência" é real.**
 
 ## Resultado por história
@@ -16,7 +16,7 @@
 | HU-06 Painel | **Atende com ressalva** | E2E "admin vê painel"; print 07 | "Resolvida pelo agente" significa "teve resposta e não gerou chamado". O cliente **não confirma**. Custo só aparece com preços configurados. |
 | HU-07 Lacunas | **Atende** | `kb-and-metrics.test.ts` (agrupamento), print 08 | O agrupamento é lexical: perguntas parecidas com palavras muito diferentes não juntam. |
 | HU-08 Proteção | **Atende** para o que está coberto | `guardrails.test.ts`, `security.test.ts` | Nomes e endereços não são mascarados. Regras de injeção só cobrem padrões conhecidos. |
-| HU-09 Avaliar o agente | **Atende parcialmente** | `docs/04-avaliacao/` | A rodada com o **Claude real está em branco**. |
+| HU-09 Avaliar o agente | **Atende parcialmente** | `docs/04-avaliacao/` | A rodada com o **Claude real não foi executada**. |
 | HU-10 Papéis | **Atende** | E2E (3 testes) | Sem limite de tentativas de login. |
 | HU-11 Sugestão de artigos (v1.1) | **Atende** | E2E v1.1; print 13 | O rascunho é só esqueleto, de propósito. |
 

@@ -135,6 +135,8 @@ Cada decisão segue o mesmo formato: **contexto, alternativas, escolha, motivo, 
 
 **Quando eu mudaria.** Se eu precisasse de streaming ou de uso de ferramentas, a interface ganharia métodos novos.
 
+**Atualização.** Provedor Groq adicionado depois (commit `c729230`); ver [`relatorio-modelo-aberto.md`](../04-avaliacao/relatorio-modelo-aberto.md).
+
 ---
 
 ## ADR-009 · Autenticação e sessão

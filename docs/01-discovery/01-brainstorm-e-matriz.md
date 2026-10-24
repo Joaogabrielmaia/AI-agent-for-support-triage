@@ -1,7 +1,7 @@
 # 01 · Brainstorm de ideias de IA para suporte e matriz de decisão
 
 ## Contexto
-Antes de escolher o que construir, listei cinco usos de IA que fazem sentido para um suporte pequeno. Queria uma decisão comparável, e não a ideia que parece mais legal.
+Listei cinco usos de IA que fazem sentido para um suporte pequeno e os comparei numa matriz. Queria uma decisão comparável, e não a ideia que parece mais legal.
 
 ## As cinco ideias
 | # | Ideia | O que faria |
@@ -13,7 +13,7 @@ Antes de escolher o que construir, listei cinco usos de IA que fazem sentido par
 | E | **Análise de lacunas** | Mostra o que os clientes perguntam e a base não cobre. |
 
 ## Critérios e pesos
-Os pesos refletem o que ouvi do negócio (ver [02-agenda-bela.md](02-agenda-bela.md)): o maior medo é o robô dar informação errada, e o maior custo é gente respondendo a mesma pergunta.
+Os pesos refletem o negócio descrito em [02-agenda-bela.md](02-agenda-bela.md): o maior medo é o robô dar informação errada, e o maior custo é gente respondendo a mesma pergunta.
 
 | Critério | Peso | Por quê |
 |---|---|---|
@@ -21,10 +21,10 @@ Os pesos refletem o que ouvi do negócio (ver [02-agenda-bela.md](02-agenda-bela
 | Risco de resposta errada ao cliente | 5 (invertido: menos risco, mais nota) | É o medo declarado. |
 | Esforço de construir e avaliar | 3 | Estudo individual, com prazo. |
 | Dá para medir com perguntas de teste | 4 | A avaliação é o diferencial do projeto. |
-| Mostra habilidades úteis nas vagas-alvo | 3 | Automação, IA aplicada e implantação. |
+| Exercita automação, IA aplicada e implantação | 3 | É o recorte de competências do estudo. |
 
 ## Matriz (nota de 1 a 5 por critério; total = soma de nota × peso)
-| Ideia | Repetitivo (×5) | Risco (×5) | Esforço (×3) | Mensurável (×4) | Vitrine (×3) | **Total** |
+| Ideia | Repetitivo (×5) | Risco (×5) | Esforço (×3) | Mensurável (×4) | Recorte do estudo (×3) | **Total** |
 |---|---|---|---|---|---|---|
 | A. Chatbot de FAQ | 5 | 2 | 3 | 5 | 4 | 25+10+9+20+12 = **76** |
 | B. Triagem e priorização | 3 | 4 | 4 | 4 | 4 | 15+20+12+16+12 = **75** |

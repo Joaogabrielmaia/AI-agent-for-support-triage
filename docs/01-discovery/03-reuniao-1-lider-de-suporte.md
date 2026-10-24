@@ -1,8 +1,8 @@
 # 03 · Reunião 1 — Líder de suporte (Renata Alves)
 
-> Simulação: o Claude interpretou o cliente nesta conversa.
+> Reunião simulada; pessoas e empresa fictícias.
 
-**Participantes:** João (eu) e Renata Alves (líder de suporte da Agenda Bela, interpretada pelo Claude).
+**Participantes:** João (eu) e Renata Alves (líder de suporte da Agenda Bela, personagem fictícia).
 **Objetivo:** entender o que ela quer do agente, o que teme e o que muda o escopo.
 
 ## Resumo da conversa

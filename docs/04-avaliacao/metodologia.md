@@ -60,5 +60,5 @@ Rodei o perfil `final` com `LLM_PROVIDER=groq` (`openai/gpt-oss-120b`) nos dois 
 
 Ressalvas: **não é o Claude**; uma única execução de um modelo não determinístico; a correção foi feita depois de ver os resultados; a correção continua sendo o proxy de fatos esperados. O relatório `relatorio-groq-1.md` registra `sem-commit` no campo Commit; a execução não gravou o hash, e não vou inventar um.
 
-## Como rodar com o Claude real (campos em branco até alguém fazer)
-Veja [`relatorio-claude.md`](relatorio-claude.md).
+## Rodada com o Claude: não executada
+Status e comando em [`relatorio-claude.md`](relatorio-claude.md).

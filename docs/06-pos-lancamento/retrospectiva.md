@@ -2,9 +2,9 @@
 
 ## 1. Reunião simulada de retrospectiva
 
-> Simulação: o Claude interpretou o cliente nesta conversa.
+> Reunião simulada; pessoas e empresa fictícias.
 
-**Participantes:** João (eu), Renata (líder), Carlos (atendente), Marina (cliente-tipo), interpretados pelo Claude. Base da conversa: os resultados reais de [`../04-avaliacao/`](../04-avaliacao/comparativo-rodadas.md) e [`../05-qualidade/`](../05-qualidade/plano-e-resultados.md).
+**Participantes:** João (eu), Renata (líder), Carlos (atendente), Marina (cliente-tipo); os três são personagens fictícios. Base da conversa: os resultados reais de [`../04-avaliacao/`](../04-avaliacao/comparativo-rodadas.md) e [`../05-qualidade/`](../05-qualidade/plano-e-resultados.md).
 
 ### O que funcionou
 - **Renata:** "A recusa honesta e o motivo no chamado. Foi o que me deixou confortável."
