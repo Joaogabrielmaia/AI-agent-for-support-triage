@@ -1,7 +1,11 @@
 # Episódio 4 — Avaliação
 
-Este é o episódio central. O conjunto de desenvolvimento tem 50 perguntas e o de validação, 20, escritas antes do ajuste. A rodada 1 acertou 66% no desenvolvimento e 70% na validação. Os 17 erros da rodada 1 foram agrupados por causa e viraram decisões (confiança com cobertura, trechos por seção, sinônimos). A rodada 2 chegou a 86% e 80%, com duas regressões admitidas (R01 e R23); a rodada 3 não mudou o total.
+Este é o episódio central. O conjunto de desenvolvimento tem 50 perguntas e o de validação, 20, escritas antes do ajuste. A rodada 1 acertou 66% no desenvolvimento e 70% na validação. Os 17 erros da rodada 1 foram agrupados por causa e viraram decisões (confiança com cobertura, trechos por seção, sinônimos). 
+
+A rodada 2 chegou a 86% e 80%, com duas regressões admitidas (R01 e R23); a rodada 3 não mudou o total.
+
 O ganho foi de +20 pontos onde ajustei e de +10 onde não ajustei: é sobreajuste, e só apareceu porque separei os conjuntos. Uma execução com a Groq (`openai/gpt-oss-120b`) achou dois defeitos meus, no avaliador e no pipeline, e a reavaliação offline subiu o resultado para 90% e 90%, com ressalvas. A rodada com o Claude não foi executada.
+
 Nota: a rodada `groq-1` está gravada com `sem-commit`; não é reproduzível a partir de um commit.
 
 | Documento | O que contém | Itens |

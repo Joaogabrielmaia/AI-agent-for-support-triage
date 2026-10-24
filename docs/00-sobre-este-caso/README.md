@@ -1,6 +1,7 @@
 # Episódio 0 — Sobre este caso
 
 Este episódio explica o que é o Prumo e em que condições foi feito. A Agenda Bela, a empresa do estudo, é fictícia, e a tabela "Real × simulado" separa o que saiu de execução (código, testes, rodadas, logs, prints) do que é premissa ou simulação (reuniões, volume de chamados).
+
 A limitação que pesa em todo o resto também está aqui: sem chave de API da Anthropic, as rodadas medem o provedor simulado e uma execução com a Groq, e a rodada com o Claude não foi executada.
 
 | Documento | O que contém | Itens |

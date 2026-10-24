@@ -12,9 +12,11 @@ Os logs de `1640e4a` (sem sufixo de commit) são anteriores à rodada com a Groq
 |---|---|---|
 | Vitest | **83 de 83 passando**, em 9 arquivos | [`execucao-vitest-2cb000d.txt`](execucao-vitest-2cb000d.txt) |
 | `tsc --noEmit` e `next lint` | sem erros nem avisos | [`execucao-lint-tipos-2cb000d.txt`](execucao-lint-tipos-2cb000d.txt) |
-| Playwright E2E | **13 de 14 passando** (ver nota) | [`execucao-e2e-486a2c6.txt`](execucao-e2e-486a2c6.txt) |
+| Playwright E2E | **14 de 14 passando** (commit `fb6b3bc`, depois da correção de porta) | [`execucao-e2e-fb6b3bc.txt`](execucao-e2e-fb6b3bc.txt) |
 
-Nota sobre o E2E: a porta 3000 da máquina estava ocupada por um servidor de outro projeto, então a suíte rodou com o app na porta 3001 (configuração temporária, fora do repositório). O teste da fila (`staff.spec.ts:27`) abre o chat com `http://localhost:3000` escrito no código, falou com o servidor errado e deu timeout. Não corrigi o teste. As tentativas anteriores também estão no diretório (`-tentativa-1` a `-4`), com a causa de cada uma no log: porta ocupada, banco com dados de uma execução anterior, banco sem `db:demo` e servidor de outro projeto.
+**Como reproduzir o E2E.** O banco precisa estar com `npm run db:seed` e `npm run db:demo`: as telas de lacunas esperam as perguntas de WhatsApp que só existem nos dados de demonstração. O E2E grava dados (conversas), então uma segunda execução sobre o mesmo banco muda a contagem das lacunas; para repetir, recrie o banco e rode `db:seed` e `db:demo` de novo. A porta do app vem de `PORT` (padrão 3000) e a do banco vem de `DATABASE_URL`; com a 5440 ocupada por outro contêiner, usei 5460 (`DATABASE_URL="postgresql://…@localhost:5460/prumo?schema=public"`, com o mesmo usuário e senha do `docker-compose.yml`, e um arquivo de override do compose fora do repositório para mapear a porta).
+
+**Tentativas anteriores** (logs mantidos, cada um com a causa no cabeçalho): a [tentativa 1](execucao-e2e-2cb000d-tentativa-1.txt) falhou com a porta 3000 ocupada; a [2](execucao-e2e-2cb000d-tentativa-2.txt) rodou sobre um banco com dados de uma execução anterior (13 de 14); a [3](execucao-e2e-2cb000d-tentativa-3.txt) rodou sem `db:demo` (12 de 14); a [4](execucao-e2e-2cb000d-tentativa-4.txt) reaproveitou o servidor de outro projeto; e o [log em `486a2c6`](execucao-e2e-486a2c6.txt) (13 de 14) rodou na porta 3001 com o teste da fila ainda apontando para a 3000. A correção está no commit `fb6b3bc`.
 
 **Histórico** (logs capturados no commit `1640e4a`, antes da rodada com a Groq):
 

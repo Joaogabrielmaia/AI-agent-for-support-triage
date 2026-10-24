@@ -1,7 +1,9 @@
 # Episódio 1 — Discovery
 
 Comparei cinco usos de IA para um suporte pequeno numa matriz com pesos escritos e escolhi um chatbot de FAQ com triagem, resumo e registro de lacunas em volta. Depois descrevi a Agenda Bela (8 pessoas, 3 no suporte) e fiz três reuniões simuladas, cada uma com um efeito no escopo.
+
 A líder de suporte deixou claro que só o financeiro decide reembolso (RN-04, 08, 09). O atendente temia ser substituído, e a resposta foi deixá-lo avaliando as respostas do agente (RF-09). A dona de salão guarda dados de saúde de clientes, o que levou ao mascaramento (RN-06) e ao bloqueio de dados de terceiros (RN-07).
+
 Fechei com 40 chamados fictícios: 24 repetitivos, 10 de julgamento e 6 sensíveis. Os números das respostas do agente (preços, prazos) são do cenário, inventados para o estudo; o volume e o percentual de repetição são premissas, não medições.
 
 | Documento | O que contém | Itens |

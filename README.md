@@ -19,6 +19,10 @@ Agente de IA de triagem de suporte: responde com fontes a partir de uma base de 
 </tr>
 </table>
 
+![Gravação do chat: pergunta de preço com fontes, pergunta fora da base com recusa, pedido de reembolso escalado e o chamado novo aparecendo na fila do atendente](docs/screenshots/demo-agente.gif)
+
+Gravação de 24 s da interface rodando localmente, com o provedor simulado: resposta com fontes, recusa, escalonamento de um pedido de reembolso e o chamado na fila (Alta, Cobrança, 24/10 10:18).
+
 ## Ficha técnica
 | | |
 |---|---|
@@ -27,7 +31,7 @@ Agente de IA de triagem de suporte: responde com fontes a partir de uma base de 
 | Stack | Next.js (App Router), TypeScript, Tailwind, Prisma, PostgreSQL com pgvector, Zod, Docker Compose |
 | Modelo na avaliação | Provedor simulado (MockProvider) e Groq `gpt-oss-120b`; rodada com o Claude não executada |
 | Base de conhecimento | 31 artigos, 93 trechos |
-| Testes | Vitest 83 de 83 (9 arquivos), E2E 13 de 14, tipos e lint sem erros; commit `2cb000d`, 2026-10-24 ([detalhes](docs/05-qualidade/plano-e-resultados.md)). Registro anterior, commit `1640e4a`: 78 de 78 e 14 de 14 |
+| Testes | Vitest 83 de 83 (9 arquivos) e tipos e lint sem erros no commit `2cb000d`; E2E 14 de 14 no commit `fb6b3bc`; 2026-10-24 ([detalhes](docs/05-qualidade/plano-e-resultados.md)). Registro anterior, commit `1640e4a`: 78 de 78 e 14 de 14 |
 | Execução | Local; não hospedado |
 
 ## Duas entradas
@@ -100,9 +104,13 @@ Fonte: [comparativo-rodadas.md](docs/04-avaliacao/comparativo-rodadas.md), gerad
 | Fora da base: recusa correta (desenvolvimento) | 20% | 80% | 80% | 80% | 100% |
 | Adversariais seguras | 100% | 100% | 100% | 100% | 100% |
 
-As rodadas 1 a 3 usam o provedor simulado, que mede busca, limiar, escalonamento e guardrails. A coluna "reavaliado" da Groq usa um avaliador que corrigi depois de ver os resultados, e a rodada `groq-1` está gravada com `sem-commit`. A rodada 3 não mudou o total e trocou erros de lugar (corrigiu R01, R23 e H01; criou R12, R17 e H07). Uma execução com a Groq (`gpt-oss-120b`) achou dois defeitos meus: o avaliador não normalizava espaço especial nem negrito, e o pipeline não tratava a recusa do próprio modelo ([relatório](docs/04-avaliacao/relatorio-modelo-aberto.md)).
+As rodadas 1 a 3 usam o provedor simulado, que mede busca, limiar, escalonamento e guardrails. A coluna "reavaliado" da Groq usa um avaliador que corrigi depois de ver os resultados, e a rodada `groq-1` está gravada com `sem-commit`. 
 
-Testes: [plano e resultados](docs/05-qualidade/plano-e-resultados.md). O E2E rodou 13 de 14 porque um teste usa a porta 3000, que estava ocupada por outro projeto na máquina.
+A rodada 3 não mudou o total e trocou erros de lugar (corrigiu R01, R23 e H01; criou R12, R17 e H07). 
+
+Uma execução com a Groq (`gpt-oss-120b`) achou dois defeitos meus: o avaliador não normalizava espaço especial nem negrito, e o pipeline não tratava a recusa do próprio modelo ([relatório](docs/04-avaliacao/relatorio-modelo-aberto.md)).
+
+Testes: [plano e resultados](docs/05-qualidade/plano-e-resultados.md), com as tentativas de E2E que falharam e a causa de cada uma.
 
 ## Rodar localmente
 Requisitos: Node 20+ e Docker.
