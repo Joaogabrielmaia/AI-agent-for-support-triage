@@ -1,0 +1,13 @@
+# Execução real — 2026-10-24T00:49:55-03:00 — commit 2cb000d — Node v24.14.0
+$ npx tsc --noEmit
+
+exit=0
+# Execução real — 2026-10-24T00:50:03-03:00 — commit 2cb000d — Node v24.14.0
+$ npm run lint
+
+
+> prumo@1.1.0 lint
+> next lint
+
+✔ No ESLint warnings or errors
+exit=0

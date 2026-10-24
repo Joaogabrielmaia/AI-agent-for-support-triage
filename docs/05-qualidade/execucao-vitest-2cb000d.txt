@@ -1,0 +1,29 @@
+# Execução real — 2026-10-24T00:49:46-03:00 — commit 2cb000d — Node v24.14.0
+$ npm test
+
+
+> prumo@1.1.0 test
+> vitest run
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+
+ RUN  v2.1.8 C:/Users/Joaog/Downloads/AI-agent-for-support-triage
+
+ ✓ tests/unit/guardrails.test.ts (22 tests) 92ms
+ ✓ tests/unit/groq-provider.test.ts (4 tests) 99ms
+ ✓ tests/unit/confidence.test.ts (6 tests) 39ms
+ ✓ tests/unit/escalation.test.ts (12 tests) 207ms
+ ✓ tests/unit/suggestions.test.ts (4 tests) 46ms
+ ✓ tests/integration/pipeline.test.ts (9 tests) 333ms
+ ✓ tests/integration/security.test.ts (13 tests) 343ms
+ ✓ tests/unit/kb-and-metrics.test.ts (12 tests) 444ms
+   ✓ sessão e senha (RNF-05) > senha: hash com sal, verifica certo e errado 393ms
+ ✓ tests/integration/pgvector-parity.test.ts (1 test) 1027ms
+   ✓ paridade entre busca em memória e pgvector > mesmo trecho no topo para as 50 perguntas de avaliação 895ms
+
+ Test Files  9 passed (9)
+      Tests  83 passed (83)
+   Start at  00:49:49
+   Duration  5.49s (transform 6.29s, setup 0ms, collect 10.18s, tests 2.63s, environment 4ms, prepare 15.46s)
+
+exit=0

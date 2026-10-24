@@ -1,0 +1,75 @@
+# Execução real — 2026-10-24T00:54:59-03:00 — commit 2cb000d — Node v24.14.0 — banco recriado do zero (migrate deploy + db:seed)
+$ npm run test:e2e
+
+
+> prumo@1.1.0 test:e2e
+> playwright test
+
+
+Running 14 tests using 1 worker
+
+  ✓  1 customer-chat.spec.ts:5:7 › chat do cliente › pergunta respondível: resposta com fontes citadas (RF-02, RF-03) (2.2s)
+  ✓  2 customer-chat.spec.ts:13:7 › chat do cliente › pergunta fora da base: recusa honesta e pedido de atendente (RF-04, RF-08) (736ms)
+  ✓  3 customer-chat.spec.ts:25:7 › chat do cliente › pedido sensível: escalonamento sem prometer reembolso (RF-05, RN-09) (517ms)
+  ✓  4 customer-chat.spec.ts:34:7 › chat do cliente › prompt injection é bloqueada (RN-07) (477ms)
+  ✓  5 customer-chat.spec.ts:42:7 › chat do cliente › erro do servidor: o chat mostra um alerta e continua utilizável (estado de erro) (404ms)
+  ✓  6 customer-chat.spec.ts:50:7 › chat do cliente › mobile: o chat cabe na tela sem rolagem horizontal (526ms)
+  ✓  7 staff.spec.ts:5:7 › área da equipe › rotas da equipe exigem login (RNF-05) (339ms)
+  ✓  8 staff.spec.ts:12:7 › área da equipe › login com senha errada mostra erro genérico (702ms)
+  ✓  9 staff.spec.ts:20:7 › área da equipe › atendente não acessa o painel (papéis) (615ms)
+  ✓  10 staff.spec.ts:27:7 › área da equipe › fila: filtros, detalhe com resumo/motivo, resposta ao cliente e avaliação (RF-06..RF-09) (1.8s)
+  ✓  11 staff.spec.ts:59:7 › área da equipe › conversa resolvida pelo agente pode ser avaliada como incorreta (859ms)
+  ✘  12 staff.spec.ts:68:7 › área da equipe › admin vê painel, lacunas, base e avaliação (RF-10, RF-11, RF-12) (5.7s)
+  ✘  13 staff.spec.ts:86:5 › v1.1: admin cria rascunho de artigo a partir de lacuna repetida e decide sobre ele (5.8s)
+  ✓  14 staff.spec.ts:102:5 › v1.1: atendente não vê coluna nem página de sugestões (891ms)
+
+
+  1) staff.spec.ts:68:7 › área da equipe › admin vê painel, lacunas, base e avaliação (RF-10, RF-11, RF-12) 
+
+    Error: Timed out 5000ms waiting for expect(locator).toContainText(expected)
+
+    Locator: getByTestId('gaps-table')
+    Expected pattern: /WhatsApp/i
+    Received string:  "Perguntas sem respostaPergunta (exemplo)VezesÚltima vezSugestão de artigoQual a melhor tintura para cabelo loiro?124/10, 00:55Só apareceu uma vez"
+    Call log:
+      - expect.toContainText with timeout 5000ms
+      - waiting for getByTestId('gaps-table')
+        7 × locator resolved to <table data-testid="gaps-table" class="w-full text-left text-sm">…</table>
+          - unexpected value "Perguntas sem respostaPergunta (exemplo)VezesÚltima vezSugestão de artigoQual a melhor tintura para cabelo loiro?124/10, 00:55Só apareceu uma vez"
+
+
+      73 |
+      74 |     await page.getByRole("link", { name: "Lacunas" }).click();
+    > 75 |     await expect(page.getByTestId("gaps-table")).toContainText(/WhatsApp/i);
+         |                                                  ^
+      76 |
+      77 |     await page.getByRole("link", { name: "Base" }).click();
+      78 |     await expect(page.getByTestId("kb-table").locator("tbody tr")).toHaveCount(31);
+        at C:\Users\Joaog\Downloads\AI-agent-for-support-triage\tests\e2e\staff.spec.ts:75:50
+
+  2) staff.spec.ts:86:5 › v1.1: admin cria rascunho de artigo a partir de lacuna repetida e decide sobre ele 
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveText(expected)
+
+    Locator: getByTestId('gaps-table').locator('tr').filter({ hasText: 'WhatsApp' }).first().locator('td').nth(1)
+    Expected string: "2"
+    Received: <element(s) not found>
+    Call log:
+      - expect.toHaveText with timeout 5000ms
+      - waiting for getByTestId('gaps-table').locator('tr').filter({ hasText: 'WhatsApp' }).first().locator('td').nth(1)
+
+
+      88 |   await page.getByRole("link", { name: "Lacunas" }).click();
+      89 |   const row = page.getByTestId("gaps-table").locator("tr", { hasText: "WhatsApp" }).first();
+    > 90 |   await expect(row.locator("td").nth(1)).toHaveText("2");
+         |                                          ^
+      91 |   await row.getByRole("button", { name: "Criar rascunho de artigo" }).click();
+      92 |   await expect(row.getByText("Rascunho criado")).toBeVisible();
+      93 |
+        at C:\Users\Joaog\Downloads\AI-agent-for-support-triage\tests\e2e\staff.spec.ts:90:42
+
+  2 failed
+    staff.spec.ts:68:7 › área da equipe › admin vê painel, lacunas, base e avaliação (RF-10, RF-11, RF-12) 
+    staff.spec.ts:86:5 › v1.1: admin cria rascunho de artigo a partir de lacuna repetida e decide sobre ele 
+  12 passed (1.0m)
+exit=1
