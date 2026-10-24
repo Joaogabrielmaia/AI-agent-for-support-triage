@@ -9,7 +9,7 @@
 |---|---|---|
 | Avaliação "correta/incorreta" em tickets **e** em conversas resolvidas pelo agente | RF-09 | `transcript.tsx`, `conversas/` |
 | Painel (categoria, resolução, escalonamento, qualidade, custo com ressalvas), lacunas com agrupamento, base, tela do relatório de avaliação | RF-10, RF-11, RF-12 | `painel/`, `lacunas/`, `base/`, `avaliacao/` |
-| 78 testes unitários/integração, incluindo segurança e paridade pgvector | RN-02..09 | `tests/` |
+| 78 testes unitários/integração no registro do commit `1640e4a` (83 no HEAD, ver [plano e resultados](plano-e-resultados.md)), incluindo segurança e paridade pgvector | RN-02..09 | `tests/` |
 | 14 testes E2E contra o build de produção | todos | `tests/e2e/` |
 | 13 prints reais gerados por script | — | `docs/screenshots/`, `scripts/screenshots.ts` |
 | Rodada 3 de avaliação | RF-12 | `relatorio-rodada-3.md` |

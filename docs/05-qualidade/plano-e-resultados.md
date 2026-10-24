@@ -1,21 +1,28 @@
 # Qualidade: plano e resultados reais
 
-Os logs completos das execuções estão ao lado, gerados pelo comando indicado, com data e commit:
-- [`execucao-vitest.txt`](execucao-vitest.txt): `npm test`
-- [`execucao-e2e.txt`](execucao-e2e.txt): `npm run test:e2e` (contra o build de produção)
-- [`execucao-lint-tipos.txt`](execucao-lint-tipos.txt): `tsc --noEmit` e `npm run lint`
+Os logs completos estão ao lado, gerados pelo comando indicado, com data e commit no cabeçalho.
 
-## Resultado das execuções (logs capturados no commit `1640e4a`)
+## Resultado das execuções
 
-Desde esse commit só mudaram documentação, scripts auxiliares (`eval/compare.ts`, `scripts/check-links.mjs`) e o título de um teste, sem alterar o código do produto.
+Os logs de `1640e4a` (sem sufixo de commit) são anteriores à rodada com a Groq (commits `c729230` e `30de504`), que alterou `providers.ts`, `pipeline.ts`, `score.ts`, `run.ts` e testes. Valem como histórico. O estado do HEAD está nos logs com o commit no nome.
 
-| Verificação | Resultado |
-|---|---|
-| Testes unitários e de integração (Vitest) | **78 de 78 passando**, em 8 arquivos |
-| Testes E2E (Playwright, Chromium) | **14 de 14 passando** |
-| Tipos (`tsc --noEmit`) | sem erros |
-| Lint (`next lint`) | sem avisos nem erros |
-| Build de produção (`next build`) | compila; rotas listadas no log do build |
+**Estado do HEAD** (2026-10-24, Node v24.14.0, banco local com `db:seed` e `db:demo`):
+
+| Verificação | Resultado | Log |
+|---|---|---|
+| Vitest | **83 de 83 passando**, em 9 arquivos | [`execucao-vitest-2cb000d.txt`](execucao-vitest-2cb000d.txt) |
+| `tsc --noEmit` e `next lint` | sem erros nem avisos | [`execucao-lint-tipos-2cb000d.txt`](execucao-lint-tipos-2cb000d.txt) |
+| Playwright E2E | **13 de 14 passando** (ver nota) | [`execucao-e2e-486a2c6.txt`](execucao-e2e-486a2c6.txt) |
+
+Nota sobre o E2E: a porta 3000 da máquina estava ocupada por um servidor de outro projeto, então a suíte rodou com o app na porta 3001 (configuração temporária, fora do repositório). O teste da fila (`staff.spec.ts:27`) abre o chat com `http://localhost:3000` escrito no código, falou com o servidor errado e deu timeout. Não corrigi o teste. As tentativas anteriores também estão no diretório (`-tentativa-1` a `-4`), com a causa de cada uma no log: porta ocupada, banco com dados de uma execução anterior, banco sem `db:demo` e servidor de outro projeto.
+
+**Histórico** (logs capturados no commit `1640e4a`, antes da rodada com a Groq):
+
+| Verificação | Resultado | Log |
+|---|---|---|
+| Vitest | 78 de 78, em 8 arquivos | [`execucao-vitest.txt`](execucao-vitest.txt) |
+| Playwright E2E | 14 de 14 | [`execucao-e2e.txt`](execucao-e2e.txt) |
+| Tipos e lint | sem erros | [`execucao-lint-tipos.txt`](execucao-lint-tipos.txt) |
 
 > **Não medi cobertura de código.** Não há relatório de cobertura neste repositório, e não vou afirmar um percentual.
 
