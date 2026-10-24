@@ -2,6 +2,11 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões seguem [SemVer](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Corrigido
+- E2E: o teste da fila abria o chat com `localhost:3000` escrito no código e falava com outro servidor quando a porta 3000 estava ocupada. A porta agora vem da variável `PORT` (padrão 3000) no `playwright.config.ts` e no teste.
+
 ## [1.1.0] — 2026-10-23
 
 ### Adicionado

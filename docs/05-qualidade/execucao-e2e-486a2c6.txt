@@ -1,0 +1,47 @@
+# Execução real — 2026-10-24T09:56:57-03:00 — commit 486a2c6 — Node v24.14.0 — banco: db:seed + db:demo, sem execução anterior do E2E; app na porta 3001 (a 3000 estava ocupada por outro projeto local), mesma suíte de tests/e2e
+$ npx playwright test --config playwright.tmp.config.ts
+
+
+Running 14 tests using 1 worker
+
+  ✓  1 customer-chat.spec.ts:5:7 › chat do cliente › pergunta respondível: resposta com fontes citadas (RF-02, RF-03) (1.2s)
+  ✓  2 customer-chat.spec.ts:13:7 › chat do cliente › pergunta fora da base: recusa honesta e pedido de atendente (RF-04, RF-08) (665ms)
+  ✓  3 customer-chat.spec.ts:25:7 › chat do cliente › pedido sensível: escalonamento sem prometer reembolso (RF-05, RN-09) (486ms)
+  ✓  4 customer-chat.spec.ts:34:7 › chat do cliente › prompt injection é bloqueada (RN-07) (456ms)
+  ✓  5 customer-chat.spec.ts:42:7 › chat do cliente › erro do servidor: o chat mostra um alerta e continua utilizável (estado de erro) (370ms)
+  ✓  6 customer-chat.spec.ts:50:7 › chat do cliente › mobile: o chat cabe na tela sem rolagem horizontal (549ms)
+  ✓  7 staff.spec.ts:5:7 › área da equipe › rotas da equipe exigem login (RNF-05) (359ms)
+  ✓  8 staff.spec.ts:12:7 › área da equipe › login com senha errada mostra erro genérico (733ms)
+  ✓  9 staff.spec.ts:20:7 › área da equipe › atendente não acessa o painel (papéis) (691ms)
+  ✘  10 staff.spec.ts:27:7 › área da equipe › fila: filtros, detalhe com resumo/motivo, resposta ao cliente e avaliação (RF-06..RF-09) (1.0m)
+  ✓  11 staff.spec.ts:59:7 › área da equipe › conversa resolvida pelo agente pode ser avaliada como incorreta (1.1s)
+  ✓  12 staff.spec.ts:68:7 › área da equipe › admin vê painel, lacunas, base e avaliação (RF-10, RF-11, RF-12) (1.2s)
+  ✓  13 staff.spec.ts:86:5 › v1.1: admin cria rascunho de artigo a partir de lacuna repetida e decide sobre ele (1.0s)
+  ✓  14 staff.spec.ts:102:5 › v1.1: atendente não vê coluna nem página de sugestões (682ms)
+
+
+  1) staff.spec.ts:27:7 › área da equipe › fila: filtros, detalhe com resumo/motivo, resposta ao cliente e avaliação (RF-06..RF-09) 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.fill: Test ended.
+    Call log:
+      - waiting for getByLabel('Sua mensagem')
+
+
+       at helpers.ts:16
+
+      14 | export async function ask(page: Page, text: string) {
+      15 |   const before = await page.getByTestId("msg-AGENT_AI").count();
+    > 16 |   await page.getByLabel("Sua mensagem").fill(text);
+         |                                         ^
+      17 |   await page.getByRole("button", { name: "Enviar" }).click();
+      18 |   await expect(page.getByTestId("msg-AGENT_AI")).toHaveCount(before + 1, { timeout: 20_000 });
+      19 | }
+        at ask (C:\Users\Joaog\Downloads\AI-agent-for-support-triage\tests\e2e\helpers.ts:16:41)
+        at C:\Users\Joaog\Downloads\AI-agent-for-support-triage\tests\e2e\staff.spec.ts:31:5
+
+  1 failed
+    staff.spec.ts:27:7 › área da equipe › fila: filtros, detalhe com resumo/motivo, resposta ao cliente e avaliação (RF-06..RF-09) 
+  13 passed (1.9m)
+exit=1

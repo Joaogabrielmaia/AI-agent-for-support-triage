@@ -1,200 +1,119 @@
-# Prumo — triagem de suporte com IA
+# Prumo
 
-**Um agente que responde com fonte, admite quando não sabe e encaminha para uma pessoa com o contexto organizado. O diferencial é a avaliação.**
+Agente de IA de triagem de suporte: responde com fontes a partir de uma base de 31 artigos, recusa quando a confiança é baixa e escala o que envolve dinheiro, identidade ou dados.
 
-| Chat com fontes | Chamado com resumo e motivo | Painel |
-|---|---|---|
-| ![Chat respondendo com fontes citadas](docs/screenshots/01-chat-resposta-com-fontes.png) | ![Detalhe do chamado com resumo, motivo e conversa](docs/screenshots/05-detalhe-do-chamado-com-resumo.png) | ![Painel com volume por categoria, resolução e escalonamento](docs/screenshots/07-painel.png) |
+## Em 30 segundos
+- **Problema:** uma empresa fictícia de agendamento para salões (8 pessoas, 3 no suporte) responde as mesmas perguntas o dia todo e teme que um robô dê informação errada.
+- **Solução:** o agente responde só o que está na base, cita a fonte, diz "não tenho essa informação" quando não sabe e passa o caso a uma pessoa, com resumo e motivo.
+- **Prova:** avaliação em 3 rodadas, de 66% a 86% no conjunto de desenvolvimento e de 70% a 80% na validação, com o sobreajuste declarado ([comparativo](docs/04-avaliacao/comparativo-rodadas.md)).
+- **Comece por aqui:** [a recusa honesta](docs/screenshots/02-recusa-honesta.png) · [a análise de erros](docs/04-avaliacao/analise-de-erros.md) · [o comparativo das rodadas](docs/04-avaliacao/comparativo-rodadas.md)
 
-> **Tudo aqui é um estudo de caso com empresa fictícia (Agenda Bela), rodando local.** Não existe cliente real, operação real, produção nem demonstração hospedada. Quem abrir este repositório deve entender tudo lendo o README, os documentos e os prints.
+<table>
+<tr>
+<td><img src="docs/screenshots/01-chat-resposta-com-fontes.png" alt="Chat do cliente com a resposta sobre o preço do plano Profissional e duas fontes numeradas"></td>
+<td><img src="docs/screenshots/02-recusa-honesta.png" alt="Chat em que o agente diz que não tem a informação sobre WhatsApp e oferece falar com uma pessoa"></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/05-detalhe-do-chamado-com-resumo.png" alt="Detalhe de um chamado com resumo, motivo do encaminhamento e conversa com a confiança de cada resposta"></td>
+<td><img src="docs/screenshots/07-painel.png" alt="Painel com conversas, taxa de resolução pelo agente, taxa de escalonamento e volume por categoria"></td>
+</tr>
+</table>
 
----
+![Gravação do chat: pergunta de preço com fontes, pergunta fora da base com recusa, pedido de reembolso escalado e o chamado novo aparecendo na fila do atendente](docs/screenshots/demo-agente.gif)
 
-## Resumo em 5 linhas
-1. **Problema:** um suporte pequeno de SaaS de agendamento (8 pessoas, 3 no suporte) afogado em perguntas repetidas, com medo de o robô dar informação errada.
-2. **Solução:** RAG sobre 31 artigos, com fontes citadas, recusa honesta ("não tenho essa informação"), escalonamento com resumo, categoria, prioridade e motivo, e guardrails contra injeção de prompt, vazamento de dados e promessa de reembolso.
-3. **Stack:** Next.js (App Router) + TypeScript, Tailwind, Prisma, PostgreSQL + pgvector, Zod, Docker Compose. Claude (API da Anthropic) atrás de uma interface, com um `MockProvider` determinístico.
-4. **Avaliação:** 50 perguntas de desenvolvimento + 20 de validação separadas. Três rodadas reais: **66% → 86% → 86%** no desenvolvimento e **70% → 80% → 80%** na validação.
-5. **Honestidade:** as rodadas 1 a 3 usam o provedor simulado e medem busca, limiar, escalonamento e guardrails. Rodei também um **modelo aberto real (Groq, `gpt-oss-120b`)**, descrito em [`relatorio-modelo-aberto.md`](docs/04-avaliacao/relatorio-modelo-aberto.md). **Nenhuma rodada usou o Claude**; essa continua em branco, com o passo a passo.
+Gravação de 24 s da interface rodando localmente, com o provedor simulado: resposta com fontes, recusa, escalonamento de um pedido de reembolso e o chamado na fila (Alta, Cobrança, 24/10 10:18).
 
-## Como o discovery foi feito
-As reuniões de discovery foram **simuladas**: o Claude interpretou a líder de suporte, um atendente e uma dona de salão, comigo conduzindo a conversa. Cada registro começa com a linha `> Simulação: o Claude interpretou o cliente nesta conversa.` Elas têm contradições (a líder quer reduzir o volume, o atendente teme perder o emprego), pedidos vagos que eu refino e uma restrição que muda o escopo (só o financeiro decide reembolso). O volume de chamados e o percentual de repetição são **premissas do caso**, não medições. Detalhes em [`docs/00-sobre-este-caso`](docs/00-sobre-este-caso/README.md).
-
----
-
-## Mapa do repositório
-| Pasta / arquivo | O que tem |
+## Ficha técnica
+| | |
 |---|---|
-| [`docs/INDEX.md`](docs/INDEX.md) | Índice de toda a documentação |
-| [`docs/00-sobre-este-caso/`](docs/00-sobre-este-caso/README.md) | Quem eu sou, a empresa fictícia, regras de integridade, o que é real e o que é simulado |
-| [`docs/01-discovery/`](docs/01-discovery/) | Brainstorm e matriz de decisão, o negócio, **3 reuniões simuladas**, análise dos chamados e processo AS-IS/TO-BE |
-| [`docs/02-definicao/`](docs/02-definicao/) | Requisitos (RF/RNF), regras de negócio, histórias com critérios de aceite, MoSCoW, backlog em 3 sprints, riscos, rastreabilidade |
-| [`docs/03-arquitetura/`](docs/03-arquitetura/decisoes.md) | **10 ADRs**, modelo de dados, diagramas de sequência e modos de falha |
-| [`docs/04-avaliacao/`](docs/04-avaliacao/metodologia.md) | Metodologia, relatórios de cada rodada, comparativo, análise de erros, relatório do Claude (em branco) |
-| [`docs/05-qualidade/`](docs/05-qualidade/plano-e-resultados.md) | Resultados reais dos testes, reunião de aceitação, reviews das 3 sprints |
-| [`docs/06-pos-lancamento/`](docs/06-pos-lancamento/retrospectiva.md) | Retrospectiva, roadmap, descrição do PR da v1.1 |
-| [`docs/entrevista/`](docs/entrevista/perguntas-por-fase.md) · [`docs/vitrine/`](docs/vitrine/curriculo.md) | Perguntas de entrevista por fase; bullets de currículo, post e respostas de 30 s / 2 min |
-| [`docs/screenshots/`](docs/screenshots/) | 13 prints gerados por script sobre a interface real |
-| [`kb/`](kb/) | 31 artigos da base de conhecimento (Markdown) |
-| [`eval/`](eval/) | Harness de avaliação: 50 + 20 perguntas, pontuação, execução, varredura, comparativo |
-| [`src/lib/agent/`](src/lib/agent/) | O agente: pipeline, guardrails, escalonamento, embedder, provedores |
-| [`src/app/`](src/app/) | Telas e API (Next.js App Router) |
-| [`prisma/`](prisma/) | Esquema, migrações (com pgvector) e seed |
-| [`tests/`](tests/) | Vitest (unitário, integração, segurança) e Playwright (E2E) |
-| [`CHANGELOG.md`](CHANGELOG.md) · [`CLAUDE.md`](CLAUDE.md) · [`LICENSE`](LICENSE) | Changelog (v1.0.0, v1.1.0), regras de trabalho, MIT |
+| Natureza | Caso fictício; empresa, pessoas e dados inventados |
+| Discovery | Reuniões simuladas, marcadas nas atas |
+| Stack | Next.js (App Router), TypeScript, Tailwind, Prisma, PostgreSQL com pgvector, Zod, Docker Compose |
+| Modelo na avaliação | Provedor simulado (MockProvider) e Groq `gpt-oss-120b`; rodada com o Claude não executada |
+| Base de conhecimento | 31 artigos, 93 trechos |
+| Testes | Vitest 83 de 83 (9 arquivos) e tipos e lint sem erros no commit `2cb000d`; E2E 14 de 14 no commit `fb6b3bc`; 2026-10-24 ([detalhes](docs/05-qualidade/plano-e-resultados.md)). Registro anterior, commit `1640e4a`: 78 de 78 e 14 de 14 |
+| Execução | Local; não hospedado |
 
-## Roteiro de leitura em 7 passos
-1. **Discovery:** [as 3 reuniões simuladas](docs/01-discovery/03-reuniao-1-lider-de-suporte.md) e a [análise dos chamados](docs/01-discovery/06-analise-dos-chamados-e-as-is.md).
-2. **Requisitos:** [requisitos](docs/02-definicao/requisitos.md) e [regras de negócio](docs/02-definicao/regras-de-negocio.md), já ligados a quem pediu.
-3. **Decisões:** os [ADRs](docs/03-arquitetura/decisoes.md). Comece pelo 004 (limiar de confiança) e pelo 002 (embeddings).
-4. **Modelo e fluxo:** [modelo de dados](docs/03-arquitetura/modelo-de-dados.md) e [sequência e falhas](docs/03-arquitetura/sequencia-e-falhas.md).
-5. **Avaliação:** [metodologia](docs/04-avaliacao/metodologia.md), [comparativo](docs/04-avaliacao/comparativo-rodadas.md) e [análise de erros](docs/04-avaliacao/analise-de-erros.md). **É a parte mais importante.**
-6. **Qualidade:** [resultados dos testes](docs/05-qualidade/plano-e-resultados.md) e a [reunião de aceitação](docs/05-qualidade/reuniao-de-aceitacao.md).
-7. **Evolução:** [PR da v1.1](docs/06-pos-lancamento/pr-v1.1.md), [retrospectiva](docs/06-pos-lancamento/retrospectiva.md) e [roadmap](docs/06-pos-lancamento/roadmap.md).
+## Duas entradas
+**Pelo lado do negócio:** [Ep. 1 Discovery](docs/01-discovery/README.md) (reuniões simuladas e 40 chamados fictícios), [Ep. 2 Definição](docs/02-definicao/README.md) (requisitos e regras de negócio) e [Ep. 6 Pós-lançamento](docs/06-pos-lancamento/README.md) (v1.1 e roadmap).
 
----
+**Pelo lado técnico:** [Ep. 3 Arquitetura](docs/03-arquitetura/README.md) (10 decisões), [Ep. 4 Avaliação (central)](docs/04-avaliacao/README.md) (erro medido, decisão, nova medição) e [Ep. 5 Qualidade](docs/05-qualidade/README.md) (testes por commit).
 
-## Tour pelo sistema
-Todos os prints foram gerados com Playwright sobre a interface real (`npm run screenshots`), com dados de demonstração criados por `npm run db:demo`.
+Siglas e termos técnicos estão no [glossário](docs/GLOSSARIO.md).
 
-### 1. Chat do cliente com fontes
-![Chat com fontes](docs/screenshots/01-chat-resposta-com-fontes.png)
+## O problema
+Um SaaS pequeno de agendamento para salões e clínicas de estética recebe, todo dia, perguntas repetidas sobre preço, cancelamento e senha. Parte dos chamados envolve reembolso, cobrança ou dados de clientes, e ali um erro custa caro. A empresa, a Agenda Bela, é fictícia.
 
-O cliente pergunta e recebe uma resposta curta, com fontes numeradas que abrem o trecho original. **Decisão:** citar só os trechos usados e no máximo 2 por artigo ([ADR-005](docs/03-arquitetura/decisoes.md#adr-005--política-de-citação)). **Repare:** a primeira frase é do preço do profissional adicional, e a segunda traz o preço certo. É uma limitação do `MockProvider` extrativo, que mantém a ordem dos trechos.
+## O que faz
+- Responde com base em artigos e **cita as fontes**, que o cliente abre no próprio chat.
+- **Recusa** quando a confiança é baixa, sem mostrar fontes, e oferece falar com uma pessoa.
+- **Escala** reembolso, cobrança contestada, exclusão de dados e acesso, com resumo, categoria, prioridade e motivo.
+- Aplica **guardrails** (regras de proteção no código): mascara dados pessoais, bloqueia injeção de prompt e filtra promessas na saída.
+- Dá à equipe fila, avaliação "correta/incorreta" de cada resposta, painel, lacunas da base e rascunhos de artigo.
 
-### 2. Recusa honesta
-![Recusa honesta](docs/screenshots/02-recusa-honesta.png)
+## O que este projeto mostra
+- Avaliação com conjunto de desenvolvimento (50 perguntas) e de validação (20) separados, com cada rodada gravando commit, data, perfil e provedor.
+- Detecção de sobreajuste: o ganho foi de +20 pontos onde ajustei e de +10 onde não ajustei.
+- Recusa honesta e escalonamento com guardrails, testados com injeção de prompt e pedidos de dados de terceiros.
 
-Sem confiança suficiente, o agente diz que não sabe, **não mostra fontes** e oferece falar com uma pessoa. **Decisão:** errar para o lado de recusar, porque o medo do negócio é a resposta errada ([ADR-004](docs/03-arquitetura/decisoes.md#adr-004--limiar-de-confiança-e-como-medi-lo)).
+| O que o projeto exercita | Onde está a prova |
+|---|---|
+| Definir quando o agente responde, recusa ou escala | [Regras de negócio](docs/02-definicao/regras-de-negocio.md) e prints [02](docs/screenshots/02-recusa-honesta.png) e [03](docs/screenshots/03-escalonamento-para-humano.png) |
+| Avaliar um sistema de IA sem se enganar | [ADR-010](docs/03-arquitetura/decisoes.md#adr-010--como-avaliar-sem-se-enganar) e [metodologia](docs/04-avaliacao/metodologia.md) (50 + 20 perguntas, conjuntos separados) |
+| Transformar erro medido em decisão | [Análise de erros](docs/04-avaliacao/analise-de-erros.md) (17 erros, decisões, rodadas 2 e 3) |
+| Admitir regressão e sobreajuste | [Comparativo](docs/04-avaliacao/comparativo-rodadas.md) e [análise de erros](docs/04-avaliacao/analise-de-erros.md) |
+| Proteger dados e resistir a injeção de prompt | [ADR-006](docs/03-arquitetura/decisoes.md#adr-006--mascaramento-de-dados-pessoais), [ADR-007](docs/03-arquitetura/decisoes.md#adr-007--prompt-injection) e [print 09](docs/screenshots/09-injecao-de-prompt-bloqueada.png) |
+| Testar com modelo real e achar defeitos próprios | [Relatório do modelo aberto](docs/04-avaliacao/relatorio-modelo-aberto.md) |
+| Devolver ao humano com contexto | Prints [04](docs/screenshots/04-fila-do-atendente.png), [05](docs/screenshots/05-detalhe-do-chamado-com-resumo.png), [08](docs/screenshots/08-lacunas-da-base.png) e [13](docs/screenshots/13-sugestao-de-artigo-v1.1.png) |
 
-### 3. Escalonamento para humano
-![Escalonamento](docs/screenshots/03-escalonamento-para-humano.png)
+## Episódios
+| Episódio | Conteúdo |
+|---|---|
+| [0 · Sobre este caso](docs/00-sobre-este-caso/README.md) | Produto, empresa fictícia, real × simulado |
+| [1 · Discovery](docs/01-discovery/README.md) | Matriz de ideias, três reuniões simuladas, 40 chamados fictícios |
+| [2 · Definição](docs/02-definicao/README.md) | 15 RF, 9 RNF, 12 RN, 11 histórias, riscos, rastreabilidade |
+| [3 · Arquitetura](docs/03-arquitetura/README.md) | 10 ADRs, modelo de dados, sequência e falhas |
+| [4 · Avaliação](docs/04-avaliacao/README.md) | Rodadas, erros, decisões, modelo aberto (central) |
+| [5 · Qualidade](docs/05-qualidade/README.md) | Testes por commit, aceitação simulada, reviews |
+| [6 · Pós-lançamento](docs/06-pos-lancamento/README.md) | v1.1, retrospectiva simulada, roadmap |
+| [Galeria](docs/screenshots/README.md) | 13 prints na ordem do fluxo |
 
-Reembolso, cobrança contestada, exclusão de dados e acesso **sempre** vão para uma pessoa, e o texto não promete valor, prazo nem reembolso. **Decisão:** regras explícitas para esses assuntos, e não "o modelo decide" ([RN-04](docs/02-definicao/regras-de-negocio.md)).
+Guia completo, com trilhas de 2, 10 e 30 minutos: [docs/INDEX.md](docs/INDEX.md). ADR é um registro de decisão de arquitetura; RF, RNF e RN são requisitos funcionais, não funcionais e regras de negócio.
 
-### 4. Injeção de prompt bloqueada
-![Injeção bloqueada](docs/screenshots/09-injecao-de-prompt-bloqueada.png)
+## Decisões que contam
+[ADR-001](docs/03-arquitetura/decisoes.md#adr-001--rag-vs-ajuste-fino-vs-regras) (RAG em vez de ajuste fino), [ADR-004](docs/03-arquitetura/decisoes.md#adr-004--limiar-de-confiança-e-como-medi-lo) (limiar de confiança), [ADR-007](docs/03-arquitetura/decisoes.md#adr-007--prompt-injection) (quatro camadas contra injeção de prompt) e [ADR-010](docs/03-arquitetura/decisoes.md#adr-010--como-avaliar-sem-se-enganar) (como avaliar sem se enganar).
 
-O pedido é bloqueado **antes de chamar o modelo**. **Decisão:** defesa em camadas (entrada, isolamento, marcador-canário, filtro de saída) e a admissão de que 100% nos meus testes é um piso, não uma garantia ([ADR-007](docs/03-arquitetura/decisoes.md#adr-007--prompt-injection)).
+**A mais difícil: o limiar de confiança** ([ADR-004](docs/03-arquitetura/decisoes.md#adr-004--limiar-de-confiança-e-como-medi-lo) e [varredura](docs/04-avaliacao/varredura-limiar.txt))
 
-### 5. Fila do atendente
-![Fila](docs/screenshots/04-fila-do-atendente.png)
+| | |
+|---|---|
+| Contexto | Abaixo de um limiar o agente recusa. Na rodada 1, as confianças das perguntas respondíveis (0,12 a 0,54) e das fora da base (0,07 a 0,29) se sobrepunham. |
+| Alternativas | Limiar fixo na similaridade (0,15); limiar mais cobertura mínima das palavras da pergunta; pedir ao modelo que diga o quanto está seguro. |
+| Escolha | Similaridade com cobertura: limiar 0,16 e cobertura mínima 0,4. Recusa correta de 20% para 80% no desenvolvimento e de 60% para 80% na validação. |
+| Custo aceito | O cliente fica sem resposta em alguns casos válidos, porque errei para o lado de recusar. F01 e F03 seguem respondidas sem base (confiança 0,33); nenhum limiar as separa. |
+| A varredura | A melhor combinação foi 0,22 com cobertura 0,4, com 88%. Não adotei: seria ajustar de novo no mesmo conjunto, e a diferença é de uma pergunta. |
+| Quando mudaria | Com o Claude real, medindo também a taxa de "o modelo disse que não sabe" como segundo sinal; com embeddings neurais, a calibragem seria refeita. |
 
-Ordenada por status e prioridade, com filtros por status, categoria e prioridade. **Decisão:** o painel não mostra produtividade individual, para não virar ferramenta de vigilância (pedido do atendente simulado).
+## Evidências
+Fonte: [comparativo-rodadas.md](docs/04-avaliacao/comparativo-rodadas.md), gerado dos JSONs de cada rodada.
 
-### 6. Chamado com resumo e motivo
-![Chamado](docs/screenshots/05-detalhe-do-chamado-com-resumo.png)
+| | Rodada 1 | Rodada 2 | Rodada 3 | Groq, como rodou | Groq, reavaliado offline |
+|---|---|---|---|---|---|
+| Desenvolvimento (50) | 66% | 86% | 86% | 78% | 90% |
+| Validação (20) | 70% | 80% | 80% | 70% | 90% |
+| Fora da base: recusa correta (desenvolvimento) | 20% | 80% | 80% | 80% | 100% |
+| Adversariais seguras | 100% | 100% | 100% | 100% | 100% |
 
-Resumo, motivo e conversa completa com fontes e confiança. O atendente responde na mesma conversa e o cliente vê no chat. **Decisão:** guardar `confiança`, `fontes` e o `guardrail` que disparou em cada mensagem, para auditar *por que* o agente fez o que fez.
+As rodadas 1 a 3 usam o provedor simulado, que mede busca, limiar, escalonamento e guardrails. A coluna "reavaliado" da Groq usa um avaliador que corrigi depois de ver os resultados, e a rodada `groq-1` está gravada com `sem-commit`. 
 
-### 7. Avaliação da resposta do agente
-![Avaliação da resposta](docs/screenshots/06-avaliacao-da-resposta-do-agente.png)
+A rodada 3 não mudou o total e trocou erros de lugar (corrigiu R01, R23 e H01; criou R12, R17 e H07). 
 
-O atendente marca "correta" ou "incorreta", inclusive em conversas que o agente resolveu sozinho (sem chamado). **Decisão:** o humano fica no controle da qualidade.
+Uma execução com a Groq (`gpt-oss-120b`) achou dois defeitos meus: o avaliador não normalizava espaço especial nem negrito, e o pipeline não tratava a recusa do próprio modelo ([relatório](docs/04-avaliacao/relatorio-modelo-aberto.md)).
 
-### 8. Painel
-![Painel](docs/screenshots/07-painel.png)
+Testes: [plano e resultados](docs/05-qualidade/plano-e-resultados.md), com as tentativas de E2E que falharam e a causa de cada uma.
 
-Volume por categoria, "resolvidas pelo agente", escalonamento, perguntas sem resposta, respostas avaliadas como corretas, tokens e custo estimado. **Decisão:** "resolvida" = teve resposta e não gerou chamado, **e a tela diz que o cliente não confirma**. O custo só aparece se os preços forem configurados.
-
-### 9. Lacunas da base
-![Lacunas](docs/screenshots/08-lacunas-da-base.png)
-
-Perguntas sem resposta agrupadas por semelhança. Com 2 ou mais ocorrências, o Admin cria um rascunho de artigo (v1.1).
-
-### 10. Sugestão de artigo (v1.1)
-![Sugestão de artigo](docs/screenshots/13-sugestao-de-artigo-v1.1.png)
-
-O rascunho traz **só as perguntas reais** e campos `[PREENCHER]`. **Decisão:** não deixar o modelo inventar fatos num artigo que viraria a fonte do próprio agente.
-
-### 11. Relatório de avaliação
-![Relatório de avaliação](docs/screenshots/10-relatorio-de-avaliacao.png)
-
-Todas as rodadas e as perguntas reprovadas, lidas de `docs/04-avaliacao/`. Há também a rodada com a Groq (reavaliada offline, com a ressalva explicada no relatório). A linha "com o Claude real" mostra **não executada**.
-
-### 12. Versão mobile
-![Mobile](docs/screenshots/11-versao-mobile-chat.png)
-
-Layout a partir de 375 px, sem rolagem horizontal (testado em E2E).
-
-Também há a [base de conhecimento](docs/screenshots/12-base-de-conhecimento.png) (31 artigos, 93 trechos).
-
----
-
-## As 5 decisões mais importantes e seus trade-offs
-| # | Decisão | O que ganhei | O que paguei | Mudaria se… |
-|---|---|---|---|---|
-| 1 | **RAG com citação**, em vez de ajuste fino ou regras puras ([ADR-001](docs/03-arquitetura/decisoes.md#adr-001--rag-vs-ajuste-fino-vs-regras)) | Atualizar um arquivo atualiza o agente; fonte nativa | A qualidade depende da busca | o volume pedisse estilo muito específico |
-| 2 | **Confiança = similaridade + cobertura**, recusando na dúvida ([ADR-004](docs/03-arquitetura/decisoes.md#adr-004--limiar-de-confiança-e-como-medi-lo)) | Recusa correta de 20% para 80% | O cliente fica sem resposta em alguns casos válidos (R06, R22) | houvesse embeddings semânticos |
-| 3 | **Embedding local por hashing**, com pgvector ([ADR-002](docs/03-arquitetura/decisoes.md#adr-002--embeddings-locais-e-pgvector)) | Tudo roda sem rede nem chave, reprodutível | **Não é busca semântica**: é a maior limitação | eu tivesse chave de API: seria o 1º passo |
-| 4 | **Assuntos sensíveis sempre escalam**, com regras explícitas e filtro de saída ([RN-04, RN-08, RN-09](docs/02-definicao/regras-de-negocio.md)) | Nenhuma promessa de reembolso, preço ou prazo | Taxa de resolução menor, por desenho | o financeiro autorizasse respostas padronizadas |
-| 5 | **Conjunto de validação separado** ([ADR-010](docs/03-arquitetura/decisoes.md#adr-010--como-avaliar-sem-se-enganar)) | Vi que o ganho real era metade do aparente | 20 perguntas a menos para ajustar; amostra pequena | outra pessoa escrevesse as perguntas |
-
----
-
-## Resultados da avaliação (números reais)
-Fonte: [`comparativo-rodadas.md`](docs/04-avaliacao/comparativo-rodadas.md), gerado dos JSONs. **Provedor: `MockProvider`** (extrativo, determinístico).
-
-| | Rodada 1 (baseline) | Rodada 2 (ajustada) | Rodada 3 (2 trechos/artigo) |
-|---|---|---|---|
-| **Desenvolvimento (50)** aprovadas | 33 (66%) | **43 (86%)** | 43 (86%) |
-| Respondíveis (30) aprovadas | 70,0% | 83,3% | 83,3% |
-| Fora da base (10): recusa correta | **20,0%** | **80,0%** | 80,0% |
-| Adversariais (10) seguras | 100% | 100% | 100% |
-| **Validação (20)** aprovadas | 14 (70%) | **16 (80%)** | 16 (80%) |
-
-### O que aprendi com os erros
-- **Subir o limiar não bastava.** Na rodada 1, as confianças das respondíveis (0,12–0,54) e das fora da base (0,07–0,29) se sobrepunham. A **cobertura** das palavras da pergunta no trecho separou os grupos.
-- **O ganho foi maior no conjunto em que ajustei (+20) do que no separado (+10).** A diferença é sobreajuste, e eu só vi porque separei antes de ajustar.
-- **A rodada 3 não mudou o total:** corrigiu R01, R23 e H01 (trecho errado do artigo certo) e criou R12, R17 e H07 (o Mock extrativo escolhe frases piores com mais texto). Mantive a mudança porque corrige a pergunta de preço, que era o erro mais visível, e **registro que o benefício com o Claude real é hipótese**.
-- **O que ainda falha:** F01 (WhatsApp) e F03 (CNPJ) são respondidas sem base, ambas com confiança 0,33, **acima de 7 respondíveis**: nenhum limiar separa. É o limite da busca lexical.
-- **Os adversariais deram 100% desde a rodada 1**, porque as regras foram escritas antes por mim. É um piso, não prova de robustez.
-
-Detalhe completo em [`analise-de-erros.md`](docs/04-avaliacao/analise-de-erros.md).
-
----
-
-## Arquitetura e modelo de dados
-```mermaid
-flowchart LR
-    C[Chat do cliente] --> API[/api/chat/]
-    API --> P[pipeline.handleMessage]
-    P --> G[guardrails: PII, injeção, terceiros, saída]
-    P --> E[escalonamento: regras, categoria, prioridade]
-    P --> V[(PostgreSQL + pgvector)]
-    P --> L{{LlmProvider}}
-    L -.-> M[MockProvider]
-    L -.-> A[AnthropicProvider]
-    API --> V
-    Q[Equipe: fila, conversas, painel, lacunas, avaliação] --> V
-```
-
-```mermaid
-erDiagram
-    User ||--o{ Ticket : atende
-    Article ||--o{ Chunk : "dividido em"
-    Conversation ||--o{ Message : contém
-    Conversation ||--o| Ticket : gera
-    Chunk { vector embedding "vector(512)" }
-    Message { enum kind "ANSWER REFUSAL ESCALATION BLOCKED" }
-    Ticket { enum priority "BAIXA MEDIA ALTA URGENTE" }
-```
-Modelo completo, sequências e modos de falha em [`docs/03-arquitetura/`](docs/03-arquitetura/).
-
-### Qualidade (execução real)
-| Verificação | Resultado | Log |
-|---|---|---|
-| Vitest (unitário, integração, segurança, paridade pgvector) | **78 de 78** | [`execucao-vitest.txt`](docs/05-qualidade/execucao-vitest.txt) |
-| Playwright E2E, contra o build de produção | **14 de 14** | [`execucao-e2e.txt`](docs/05-qualidade/execucao-e2e.txt) |
-| `tsc --noEmit` e `next lint` | sem erros | [`execucao-lint-tipos.txt`](docs/05-qualidade/execucao-lint-tipos.txt) |
-
-Não medi cobertura de código e não afirmo percentual.
-
----
-
-## Como rodar localmente
-Requisitos: Node 20+, Docker.
-
+## Rodar localmente
+Requisitos: Node 20+ e Docker.
 ```bash
 npm install
 cp .env.example .env            # ajuste SESSION_SECRET (qualquer string longa)
@@ -204,67 +123,38 @@ npm run db:seed                 # usuários, 31 artigos e vetores
 npm run db:demo                 # conversas de demonstração (apaga todas as conversas)
 npm run build && npm run start  # http://localhost:3000
 ```
+Contas de demonstração (fictícias, só locais): `admin@agendabela.test` e `atendente@agendabela.test`, senha `prumo-demo-123`. O cliente usa [`/chat`](http://localhost:3000/chat) sem login, com `LLM_PROVIDER=mock` por padrão.
 
-**Contas de demonstração (fictícias, só locais):**
-| Papel | E-mail | Senha |
-|---|---|---|
-| Admin | `admin@agendabela.test` | `prumo-demo-123` |
-| Atendente | `atendente@agendabela.test` | `prumo-demo-123` |
-
-O cliente usa [`/chat`](http://localhost:3000/chat) sem login. Por padrão o provedor é o `MockProvider` (`LLM_PROVIDER=mock`).
-
-**Testes:**
 ```bash
-npm test               # Vitest
-npm run test:e2e       # Playwright (sobe build + start, ou usa o servidor da porta 3000)
-npm run lint && npm run typecheck
-npm run screenshots    # regenera docs/screenshots
-```
-No Windows, uma vez: `npx playwright install chromium`.
-
-### Como rodar a avaliação
-```bash
+npm test && npm run test:e2e && npm run lint && npm run typecheck
 npm run eval -- --profile final --label minha-rodada      # 50 perguntas, sem banco e sem rede
 npm run eval -- --profile final --label minha-validacao --dataset holdout
 npm run sweep -- --profile final                           # varredura de limiar
-npm run eval:compare                                       # regenera o comparativo
+npm run screenshots                                        # regenera docs/screenshots
 ```
-Os relatórios saem em `docs/04-avaliacao/`. A avaliação usa busca em memória, e a paridade com o pgvector é testada.
+No Windows, uma vez: `npx playwright install chromium`.
 
-### Como rodar com o Claude real (campos em branco até eu fazer)
+**Rodada com o Claude: não executada.** Sem chave de API, nenhum número deste repositório fala do Claude. Para executar:
 ```bash
 export ANTHROPIC_API_KEY=...  LLM_PROVIDER=anthropic
-export PRICE_INPUT_PER_MTOK=...  PRICE_OUTPUT_PER_MTOK=...   # preços vigentes
+export PRICE_INPUT_PER_MTOK=...  PRICE_OUTPUT_PER_MTOK=...
 npm run eval -- --profile final --label claude-1
 ```
-Preencha [`relatorio-claude.md`](docs/04-avaliacao/relatorio-claude.md). A chave só vem do ambiente, nunca de arquivo versionado.
+Detalhes em [relatorio-claude.md](docs/04-avaliacao/relatorio-claude.md). A chave só vem do ambiente.
 
----
+## O que falta para sair do estudo
+- Rodar a avaliação com o Claude real: [relatório](docs/04-avaliacao/relatorio-claude.md) e [roadmap](docs/06-pos-lancamento/roadmap.md).
+- Trocar o embedding por hashing, que não é semântico, por um modelo semântico: [ADR-002](docs/03-arquitetura/decisoes.md#adr-002--embeddings-locais-e-pgvector).
+- Ampliar a avaliação, hoje com 70 perguntas escritas pelo autor: [metodologia](docs/04-avaliacao/metodologia.md).
+- Medir custo e latência com o Claude: [requisitos](docs/02-definicao/requisitos.md) (RNF-01 e RNF-02, metas não medidas).
+- Cobertura de código, auditoria de acessibilidade, teste de carga e limite de tentativas de login: [plano e resultados](docs/05-qualidade/plano-e-resultados.md).
+- Hospedagem: o projeto roda só localmente.
 
-## Limitações e roadmap
-**Limitações (todas conhecidas e documentadas):**
-- **Nenhum número fala do Claude.** Os números vêm do provedor simulado e de uma única execução da Groq (`gpt-oss-120b`); o `AnthropicProvider` existe mas **não foi exercitado**. A coluna "reavaliado" da Groq usa um avaliador que corrigi depois de ver os resultados.
-- **A busca é lexical, não semântica** ([ADR-002](docs/03-arquitetura/decisoes.md#adr-002--embeddings-locais-e-pgvector)). Os erros restantes são quase todos de vocabulário, e F01/F03 não se separam por limiar.
-- **Os adversariais foram escritos por mim**, e as regras de entrada também. 100% é um piso.
-- **Amostra pequena, mesmo autor:** 50 + 20 perguntas, escritas por mim.
-- **"Resolvida pelo agente" é "não virou chamado"**, não confirmação do cliente.
-- **Dados de demonstração** populam a fila e o painel. Não são uso real.
-- Sem limite de tentativas de login, recuperação de senha, 2FA; nomes e endereços não são mascarados; o agrupamento de lacunas é lexical.
-- Sem auditoria automatizada de acessibilidade, sem teste de carga.
-- A rodada 2 mudou cinco coisas juntas, e não fiz ablação.
+## Limites
+- A busca é lexical: nenhum limiar separa F01 e F03, e os erros que sobraram são quase todos de vocabulário.
+- Os adversariais foram escritos pelo autor, junto com as regras de entrada; 100% é um piso.
+- "Resolvida pelo agente" significa que não virou chamado; o cliente não confirma.
+- Fila e painel usam dados de demonstração, não uso real.
+- A rodada 2 mudou cinco coisas juntas, sem ablação.
 
-**Roadmap** ([completo](docs/06-pos-lancamento/roadmap.md)): 1) rodar com o Claude real, 2) ciclo de feedback das respostas "incorretas", 3) embeddings semânticos, 4) segundo sinal de confiança, 5) ablação, 6) segurança do login.
-
----
-
-## O que este projeto demonstra sobre mim
-- **Trato IA como um sistema que precisa ser medido**, e não como uma demonstração: o harness existiu antes do app, e cada ajuste nasceu de um erro medido.
-- **Desenho para falhar bem:** o cliente nunca fica sem resposta, o escalonamento nunca depende do modelo, e dinheiro, identidade e dados sensíveis sempre chegam a uma pessoa.
-- **Registro o que não funcionou:** a rodada que não melhorou o total, os falsos positivos que continuam, o Mock que não prova nada sobre o Claude.
-- **Transformo conversa em requisito rastreável:** contradições e restrições do discovery viraram regras de negócio, ADRs e testes, com IDs que aparecem nos commits.
-- **Cuido do lado humano do suporte:** o atendente avalia o agente e fica no controle da qualidade, e o painel não vira vigilância.
-
-**[ESPAÇO PARA EU PREENCHER: ligação com minha experiência real com suporte e IA]**
-
----
-Licença [MIT](LICENSE). Mais documentação em [`docs/INDEX.md`](docs/INDEX.md).
+Licença [MIT](LICENSE).

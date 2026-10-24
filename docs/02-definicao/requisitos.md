@@ -5,7 +5,7 @@ Os IDs abaixo são usados nos commits, nos testes e na [matriz de rastreabilidad
 ## Requisitos funcionais
 | ID | Requisito | Prioridade |
 |---|---|---|
-| RF-01 | Base de conhecimento com **ao menos 25 artigos** em Markdown, divididos em trechos, com busca semântica. | Must |
+| RF-01 | Base de conhecimento com **ao menos 25 artigos** em Markdown, divididos em trechos, com busca por similaridade sobre embeddings por hashing (não é busca semântica; ver [ADR-002](../03-arquitetura/decisoes.md#adr-002--embeddings-locais-e-pgvector)). | Must |
 | RF-02 | O chat do cliente responde com base nos artigos. | Must |
 | RF-03 | Toda resposta **cita as fontes** usadas e deixa abrir o trecho. | Must |
 | RF-04 | Quando a confiança é baixa, o agente diz **"não tenho essa informação"**. | Must |

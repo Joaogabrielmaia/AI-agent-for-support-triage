@@ -2,6 +2,8 @@
 
 Requisito → história → código → teste. Os nomes de arquivo são reais.
 
+> Itens sem linha nesta matriz: RN-01, RN-03, RN-11, RN-12; RNF-01, RNF-02, RNF-03, RNF-04, RNF-06, RNF-08, RNF-09.
+
 | Requisito | História | Código principal | Testes |
 |---|---|---|---|
 | RF-01 | HU-01 | `kb/`, `src/lib/agent/kb.ts`, `embedder.ts`, `prisma/seed.ts` | `unit/kb-and-metrics.test.ts`, `integration/pgvector-parity.test.ts` |

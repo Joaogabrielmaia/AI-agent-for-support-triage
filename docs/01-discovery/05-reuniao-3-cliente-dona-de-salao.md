@@ -1,8 +1,8 @@
 # 05 · Reunião 3 — Cliente-tipo (Marina Lopes, dona de salão)
 
-> Simulação: o Claude interpretou o cliente nesta conversa.
+> Reunião simulada; pessoas e empresa fictícias.
 
-**Participantes:** João (eu) e Marina Lopes (dona de um salão com 4 profissionais, cliente da Agenda Bela, interpretada pelo Claude).
+**Participantes:** João (eu) e Marina Lopes (dona de um salão com 4 profissionais, cliente da Agenda Bela, personagem fictícia).
 **Objetivo:** ver o suporte pelo lado de quem pergunta.
 
 ## Resumo da conversa

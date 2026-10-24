@@ -1,8 +1,8 @@
 # 04 · Reunião 2 — Atendente (Carlos Nogueira)
 
-> Simulação: o Claude interpretou o cliente nesta conversa.
+> Reunião simulada; pessoas e empresa fictícias.
 
-**Participantes:** João (eu) e Carlos Nogueira (atendente da Agenda Bela, interpretado pelo Claude).
+**Participantes:** João (eu) e Carlos Nogueira (atendente da Agenda Bela, personagem fictício).
 **Objetivo:** ver o dia a dia de quem atende, entender o que ajudaria e o que assusta.
 
 ## Resumo da conversa

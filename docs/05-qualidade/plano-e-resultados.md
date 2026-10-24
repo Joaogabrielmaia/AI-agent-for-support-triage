@@ -1,21 +1,30 @@
 # Qualidade: plano e resultados reais
 
-Os logs completos das execuções estão ao lado, gerados pelo comando indicado, com data e commit:
-- [`execucao-vitest.txt`](execucao-vitest.txt): `npm test`
-- [`execucao-e2e.txt`](execucao-e2e.txt): `npm run test:e2e` (contra o build de produção)
-- [`execucao-lint-tipos.txt`](execucao-lint-tipos.txt): `tsc --noEmit` e `npm run lint`
+Os logs completos estão ao lado, gerados pelo comando indicado, com data e commit no cabeçalho.
 
-## Resultado das execuções (logs capturados no commit `1640e4a`)
+## Resultado das execuções
 
-Desde esse commit só mudaram documentação, scripts auxiliares (`eval/compare.ts`, `scripts/check-links.mjs`) e o título de um teste, sem alterar o código do produto.
+Os logs de `1640e4a` (sem sufixo de commit) são anteriores à rodada com a Groq (commits `c729230` e `30de504`), que alterou `providers.ts`, `pipeline.ts`, `score.ts`, `run.ts` e testes. Valem como histórico. O estado do HEAD está nos logs com o commit no nome.
 
-| Verificação | Resultado |
-|---|---|
-| Testes unitários e de integração (Vitest) | **78 de 78 passando**, em 8 arquivos |
-| Testes E2E (Playwright, Chromium) | **14 de 14 passando** |
-| Tipos (`tsc --noEmit`) | sem erros |
-| Lint (`next lint`) | sem avisos nem erros |
-| Build de produção (`next build`) | compila; rotas listadas no log do build |
+**Estado do HEAD** (2026-10-24, Node v24.14.0, banco local com `db:seed` e `db:demo`):
+
+| Verificação | Resultado | Log |
+|---|---|---|
+| Vitest | **83 de 83 passando**, em 9 arquivos | [`execucao-vitest-2cb000d.txt`](execucao-vitest-2cb000d.txt) |
+| `tsc --noEmit` e `next lint` | sem erros nem avisos | [`execucao-lint-tipos-2cb000d.txt`](execucao-lint-tipos-2cb000d.txt) |
+| Playwright E2E | **14 de 14 passando** (commit `fb6b3bc`, depois da correção de porta) | [`execucao-e2e-fb6b3bc.txt`](execucao-e2e-fb6b3bc.txt) |
+
+**Como reproduzir o E2E.** O banco precisa estar com `npm run db:seed` e `npm run db:demo`: as telas de lacunas esperam as perguntas de WhatsApp que só existem nos dados de demonstração. O E2E grava dados (conversas), então uma segunda execução sobre o mesmo banco muda a contagem das lacunas; para repetir, recrie o banco e rode `db:seed` e `db:demo` de novo. A porta do app vem de `PORT` (padrão 3000) e a do banco vem de `DATABASE_URL`; com a 5440 ocupada por outro contêiner, usei 5460 (`DATABASE_URL="postgresql://…@localhost:5460/prumo?schema=public"`, com o mesmo usuário e senha do `docker-compose.yml`, e um arquivo de override do compose fora do repositório para mapear a porta).
+
+**Tentativas anteriores** (logs mantidos, cada um com a causa no cabeçalho): a [tentativa 1](execucao-e2e-2cb000d-tentativa-1.txt) falhou com a porta 3000 ocupada; a [2](execucao-e2e-2cb000d-tentativa-2.txt) rodou sobre um banco com dados de uma execução anterior (13 de 14); a [3](execucao-e2e-2cb000d-tentativa-3.txt) rodou sem `db:demo` (12 de 14); a [4](execucao-e2e-2cb000d-tentativa-4.txt) reaproveitou o servidor de outro projeto; e o [log em `486a2c6`](execucao-e2e-486a2c6.txt) (13 de 14) rodou na porta 3001 com o teste da fila ainda apontando para a 3000. A correção está no commit `fb6b3bc`.
+
+**Histórico** (logs capturados no commit `1640e4a`, antes da rodada com a Groq):
+
+| Verificação | Resultado | Log |
+|---|---|---|
+| Vitest | 78 de 78, em 8 arquivos | [`execucao-vitest.txt`](execucao-vitest.txt) |
+| Playwright E2E | 14 de 14 | [`execucao-e2e.txt`](execucao-e2e.txt) |
+| Tipos e lint | sem erros | [`execucao-lint-tipos.txt`](execucao-lint-tipos.txt) |
 
 > **Não medi cobertura de código.** Não há relatório de cobertura neste repositório, e não vou afirmar um percentual.
 

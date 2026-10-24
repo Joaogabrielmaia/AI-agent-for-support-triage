@@ -2,6 +2,8 @@
 
 > **Status: executado.** Rodei o harness com `LLM_PROVIDER=groq` (`openai/gpt-oss-120b`) porque não tive chave da Anthropic. **Isto não substitui a rodada com o Claude**, que continua em branco em [`relatorio-claude.md`](relatorio-claude.md). Aqui só vale o que um modelo de verdade produziu; nada foi estimado nem copiado do Mock.
 
+> Nota: a rodada `groq-1` está gravada com `sem-commit`; não é reproduzível a partir de um commit.
+
 ## O que este relatório responde (e o que não)
 - **Responde:** o pipeline funciona com um modelo de linguagem real, e não só com o `MockProvider` extrativo? Onde o modelo real se comporta diferente do Mock?
 - **Não responde:** como o Claude se sairia. Modelo, estilo de resposta e preço são outros.
