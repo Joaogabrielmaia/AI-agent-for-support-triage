@@ -131,7 +131,7 @@ Testes unitários, de integração, de segurança, de paridade com o pgvector e 
 | Quando mudaria | Com o modelo real, medindo também a taxa de "o modelo disse que não sabe" como segundo sinal; com embeddings neurais, a calibragem seria refeita. |
 
 ## Implantação, operação e adoção
-O produto roda em ambiente local. O [plano de implantação](docs/ciclo-de-vida/08-implantacao-e-operacao.md) (rollout em três etapas, rollback, treinamento e indicadores) é planejamento e não foi executado. As instruções de execução estão em [CONTRIBUTING.md](CONTRIBUTING.md).
+O produto roda em ambiente local. O [plano de implantação](docs/ciclo-de-vida/08-implantacao-e-operacao.md) (rollout em três etapas, rollback, treinamento e indicadores) é planejamento e não foi executado. 
 
 ## Gestão de configuração e evolução
 Conventional Commits com IDs de requisito, SemVer com duas releases, três branches de trabalho, dois PRs de documentação e um da v1.1, dependências fixadas e `package-lock.json` versionado. A dívida técnica e o histórico de versões estão em [desenvolvimento e configuração](docs/ciclo-de-vida/06-desenvolvimento-e-configuracao.md) e [evolução](docs/ciclo-de-vida/09-evolucao-e-roadmap.md).
@@ -166,7 +166,7 @@ Conventional Commits com IDs de requisito, SemVer com duas releases, três branc
 - Fechar o ciclo de feedback: respostas marcadas como incorretas viram perguntas de avaliação ([roadmap](docs/ciclo-de-vida/09-evolucao-e-roadmap.md#roadmap)).
 
 ## Documentos complementares
-[Ciclo de vida](docs/ciclo-de-vida/README.md) · [Guia da série em 7 episódios](docs/INDEX.md) · [Galeria](docs/screenshots/README.md) · [Glossário](docs/GLOSSARIO.md) · [Segurança](docs/ciclo-de-vida/seguranca-e-confiabilidade.md) · [Diagramas](docs/ciclo-de-vida/diagramas/README.md) · [CONTRIBUTING](CONTRIBUTING.md)
+[Ciclo de vida](docs/ciclo-de-vida/README.md) · [Guia da série em 7 episódios](docs/INDEX.md) · [Galeria](docs/screenshots/README.md) · [Glossário](docs/GLOSSARIO.md) · [Segurança](docs/ciclo-de-vida/seguranca-e-confiabilidade.md) · [Diagramas](docs/ciclo-de-vida/diagramas/README.md).
 
 ## Nota de contexto acadêmico
 
