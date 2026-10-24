@@ -2,11 +2,10 @@
 
 Agente de IA de triagem de suporte: responde com fontes a partir de uma base de 31 artigos, recusa quando a confiança é baixa e escala o que envolve dinheiro, identidade ou dados.
 
-## Em 30 segundos
-- **Problema:** uma empresa fictícia de agendamento para salões (8 pessoas, 3 no suporte) responde as mesmas perguntas o dia todo e teme que um robô dê informação errada.
-- **Solução:** o agente responde só o que está na base, cita a fonte, diz "não tenho essa informação" quando não sabe e passa o caso a uma pessoa, com resumo e motivo.
-- **Prova:** avaliação em 3 rodadas, de 66% a 86% no conjunto de desenvolvimento e de 70% a 80% na validação, com o sobreajuste declarado ([comparativo](docs/04-avaliacao/comparativo-rodadas.md)).
-- **Comece por aqui:** [a recusa honesta](docs/screenshots/02-recusa-honesta.png) · [a análise de erros](docs/04-avaliacao/analise-de-erros.md) · [o comparativo das rodadas](docs/04-avaliacao/comparativo-rodadas.md)
+## O problema
+Cenário: a Agenda Bela, empresa fictícia de agendamento para salões, tem 8 pessoas e 3 delas no suporte.
+Elas respondem as mesmas perguntas de preço, cancelamento e senha, e temem que um robô erre.
+Reembolso, cobrança e dados de clientes não podem ser decididos por ele.
 
 <table>
 <tr>
@@ -19,43 +18,24 @@ Agente de IA de triagem de suporte: responde com fontes a partir de uma base de 
 </tr>
 </table>
 
-![Gravação do chat: pergunta de preço com fontes, pergunta fora da base com recusa, pedido de reembolso escalado e o chamado novo aparecendo na fila do atendente](docs/screenshots/demo-agente.gif)
-
-Gravação de 24 s da interface rodando localmente, com o provedor simulado: resposta com fontes, recusa, escalonamento de um pedido de reembolso e o chamado na fila (Alta, Cobrança, 24/10 10:18).
+![Gravação do chat: pergunta de preço com fontes, pergunta fora da base com recusa, pedido de reembolso escalado e o chamado novo na fila do atendente](docs/screenshots/demo-agente.gif)
 
 ## Ficha técnica
 | | |
 |---|---|
-| Natureza | Caso fictício; empresa, pessoas e dados inventados |
-| Discovery | Reuniões simuladas, marcadas nas atas |
-| Stack | Next.js (App Router), TypeScript, Tailwind, Prisma, PostgreSQL com pgvector, Zod, Docker Compose |
-| Modelo na avaliação | Provedor simulado (MockProvider) e Groq `gpt-oss-120b`; rodada com o Claude não executada |
-| Base de conhecimento | 31 artigos, 93 trechos |
-| Testes | Vitest 83 de 83 (9 arquivos) e tipos e lint sem erros no commit `2cb000d`; E2E 14 de 14 no commit `fb6b3bc`; 2026-10-24 ([detalhes](docs/05-qualidade/plano-e-resultados.md)). Registro anterior, commit `1640e4a`: 78 de 78 e 14 de 14 |
-| Execução | Local; não hospedado |
+| Natureza | Estudo de caso fictício |
+| Stack | Next.js (App Router), TypeScript, Tailwind, Prisma, PostgreSQL com pgvector, Zod, Vitest, Playwright |
+| Testes | Vitest 83 de 83 (9 arquivos), 2026-10-24, commit `2cb000d`; E2E 14 de 14, 2026-10-24, commit `fb6b3bc` ([log](docs/05-qualidade/plano-e-resultados.md)) |
 
-## Duas entradas
-**Pelo lado do negócio:** [Ep. 1 Discovery](docs/01-discovery/README.md) (reuniões simuladas e 40 chamados fictícios), [Ep. 2 Definição](docs/02-definicao/README.md) (requisitos e regras de negócio) e [Ep. 6 Pós-lançamento](docs/06-pos-lancamento/README.md) (v1.1 e roadmap).
+## O que construí
+- Uma busca por similaridade sobre embeddings por hashing, guardados no pgvector (não é busca semântica, e declaro isso no [ADR-002](docs/03-arquitetura/decisoes.md#adr-002--embeddings-locais-e-pgvector)).
+- Um limiar de confiança que combina similaridade e cobertura das palavras da pergunta: 0,16 e 0,4 ([ADR-004](docs/03-arquitetura/decisoes.md#adr-004--limiar-de-confiança-e-como-medi-lo)).
+- Quatro camadas contra injeção de prompt: entrada, isolamento, marcador-canário e filtro de saída ([ADR-007](docs/03-arquitetura/decisoes.md#adr-007--prompt-injection)).
+- Mascaramento de dados pessoais antes de guardar ou enviar ao modelo ([ADR-006](docs/03-arquitetura/decisoes.md#adr-006--mascaramento-de-dados-pessoais)).
+- Escalonamento com resumo, categoria, prioridade e motivo, por regras explícitas ([regras de negócio](docs/02-definicao/regras-de-negocio.md)).
+- Uma avaliação com 50 + 20 perguntas e 3 rodadas, que detectou sobreajuste, e dez decisões registradas em ADRs ([guia da série](docs/INDEX.md)).
 
-**Pelo lado técnico:** [Ep. 3 Arquitetura](docs/03-arquitetura/README.md) (10 decisões), [Ep. 4 Avaliação (central)](docs/04-avaliacao/README.md) (erro medido, decisão, nova medição) e [Ep. 5 Qualidade](docs/05-qualidade/README.md) (testes por commit).
-
-Siglas e termos técnicos estão no [glossário](docs/GLOSSARIO.md).
-
-## O problema
-Um SaaS pequeno de agendamento para salões e clínicas de estética recebe, todo dia, perguntas repetidas sobre preço, cancelamento e senha. Parte dos chamados envolve reembolso, cobrança ou dados de clientes, e ali um erro custa caro. A empresa, a Agenda Bela, é fictícia.
-
-## O que faz
-- Responde com base em artigos e **cita as fontes**, que o cliente abre no próprio chat.
-- **Recusa** quando a confiança é baixa, sem mostrar fontes, e oferece falar com uma pessoa.
-- **Escala** reembolso, cobrança contestada, exclusão de dados e acesso, com resumo, categoria, prioridade e motivo.
-- Aplica **guardrails** (regras de proteção no código): mascara dados pessoais, bloqueia injeção de prompt e filtra promessas na saída.
-- Dá à equipe fila, avaliação "correta/incorreta" de cada resposta, painel, lacunas da base e rascunhos de artigo.
-
-## O que este projeto mostra
-- Avaliação com conjunto de desenvolvimento (50 perguntas) e de validação (20) separados, com cada rodada gravando commit, data, perfil e provedor.
-- Detecção de sobreajuste: o ganho foi de +20 pontos onde ajustei e de +10 onde não ajustei.
-- Recusa honesta e escalonamento com guardrails, testados com injeção de prompt e pedidos de dados de terceiros.
-
+## Competência → prova
 | O que o projeto exercita | Onde está a prova |
 |---|---|
 | Definir quando o agente responde, recusa ou escala | [Regras de negócio](docs/02-definicao/regras-de-negocio.md) e prints [02](docs/screenshots/02-recusa-honesta.png) e [03](docs/screenshots/03-escalonamento-para-humano.png) |
@@ -66,95 +46,34 @@ Um SaaS pequeno de agendamento para salões e clínicas de estética recebe, tod
 | Testar com modelo real e achar defeitos próprios | [Relatório do modelo aberto](docs/04-avaliacao/relatorio-modelo-aberto.md) |
 | Devolver ao humano com contexto | Prints [04](docs/screenshots/04-fila-do-atendente.png), [05](docs/screenshots/05-detalhe-do-chamado-com-resumo.png), [08](docs/screenshots/08-lacunas-da-base.png) e [13](docs/screenshots/13-sugestao-de-artigo-v1.1.png) |
 
-## Episódios
-| Episódio | Conteúdo |
-|---|---|
-| [0 · Sobre este caso](docs/00-sobre-este-caso/README.md) | Produto, empresa fictícia, real × simulado |
-| [1 · Discovery](docs/01-discovery/README.md) | Matriz de ideias, três reuniões simuladas, 40 chamados fictícios |
-| [2 · Definição](docs/02-definicao/README.md) | 15 RF, 9 RNF, 12 RN, 11 histórias, riscos, rastreabilidade |
-| [3 · Arquitetura](docs/03-arquitetura/README.md) | 10 ADRs, modelo de dados, sequência e falhas |
-| [4 · Avaliação](docs/04-avaliacao/README.md) | Rodadas, erros, decisões, modelo aberto (central) |
-| [5 · Qualidade](docs/05-qualidade/README.md) | Testes por commit, aceitação simulada, reviews |
-| [6 · Pós-lançamento](docs/06-pos-lancamento/README.md) | v1.1, retrospectiva simulada, roadmap |
-| [Galeria](docs/screenshots/README.md) | 13 prints na ordem do fluxo |
-
-Guia completo, com trilhas de 2, 10 e 30 minutos: [docs/INDEX.md](docs/INDEX.md). ADR é um registro de decisão de arquitetura; RF, RNF e RN são requisitos funcionais, não funcionais e regras de negócio.
-
-## Decisões que contam
-[ADR-001](docs/03-arquitetura/decisoes.md#adr-001--rag-vs-ajuste-fino-vs-regras) (RAG em vez de ajuste fino), [ADR-004](docs/03-arquitetura/decisoes.md#adr-004--limiar-de-confiança-e-como-medi-lo) (limiar de confiança), [ADR-007](docs/03-arquitetura/decisoes.md#adr-007--prompt-injection) (quatro camadas contra injeção de prompt) e [ADR-010](docs/03-arquitetura/decisoes.md#adr-010--como-avaliar-sem-se-enganar) (como avaliar sem se enganar).
-
-**A mais difícil: o limiar de confiança** ([ADR-004](docs/03-arquitetura/decisoes.md#adr-004--limiar-de-confiança-e-como-medi-lo) e [varredura](docs/04-avaliacao/varredura-limiar.txt))
-
+## Decisão difícil: o limiar de confiança
 | | |
 |---|---|
-| Contexto | Abaixo de um limiar o agente recusa. Na rodada 1, as confianças das perguntas respondíveis (0,12 a 0,54) e das fora da base (0,07 a 0,29) se sobrepunham. |
+| Contexto | Abaixo de um limiar o agente recusa. Na rodada 1, a confiança das perguntas respondíveis (0,12 a 0,54) e a das fora da base (0,07 a 0,29) se sobrepunham. |
 | Alternativas | Limiar fixo na similaridade (0,15); limiar mais cobertura mínima das palavras da pergunta; pedir ao modelo que diga o quanto está seguro. |
-| Escolha | Similaridade com cobertura: limiar 0,16 e cobertura mínima 0,4. Recusa correta de 20% para 80% no desenvolvimento e de 60% para 80% na validação. |
+| Escolha | Similaridade com cobertura: limiar 0,16 e cobertura mínima 0,4. A recusa correta foi de 20% a 80% no desenvolvimento e de 60% a 80% na validação. |
 | Custo aceito | O cliente fica sem resposta em alguns casos válidos, porque errei para o lado de recusar. F01 e F03 seguem respondidas sem base (confiança 0,33); nenhum limiar as separa. |
-| A varredura | A melhor combinação foi 0,22 com cobertura 0,4, com 88%. Não adotei: seria ajustar de novo no mesmo conjunto, e a diferença é de uma pergunta. |
-| Quando mudaria | Com o Claude real, medindo também a taxa de "o modelo disse que não sabe" como segundo sinal; com embeddings neurais, a calibragem seria refeita. |
+| A varredura | A melhor combinação foi 0,22 com cobertura 0,4, com 88% ([varredura](docs/04-avaliacao/varredura-limiar.txt)). Não adotei: seria ajustar de novo no mesmo conjunto, e a diferença é de uma pergunta. |
+| Quando mudaria | Com o modelo real, medindo também a taxa de "o modelo disse que não sabe" como segundo sinal; com embeddings neurais, a calibragem seria refeita. |
 
 ## Evidências
-Fonte: [comparativo-rodadas.md](docs/04-avaliacao/comparativo-rodadas.md), gerado dos JSONs de cada rodada.
-
-| | Rodada 1 | Rodada 2 | Rodada 3 | Groq, como rodou | Groq, reavaliado offline |
-|---|---|---|---|---|---|
-| Desenvolvimento (50) | 66% | 86% | 86% | 78% | 90% |
-| Validação (20) | 70% | 80% | 80% | 70% | 90% |
-| Fora da base: recusa correta (desenvolvimento) | 20% | 80% | 80% | 80% | 100% |
-| Adversariais seguras | 100% | 100% | 100% | 100% | 100% |
-
-As rodadas 1 a 3 usam o provedor simulado, que mede busca, limiar, escalonamento e guardrails. A coluna "reavaliado" da Groq usa um avaliador que corrigi depois de ver os resultados, e a rodada `groq-1` está gravada com `sem-commit`. 
-
-A rodada 3 não mudou o total e trocou erros de lugar (corrigiu R01, R23 e H01; criou R12, R17 e H07). 
-
-Uma execução com a Groq (`gpt-oss-120b`) achou dois defeitos meus: o avaliador não normalizava espaço especial nem negrito, e o pipeline não tratava a recusa do próprio modelo ([relatório](docs/04-avaliacao/relatorio-modelo-aberto.md)).
-
-Testes: [plano e resultados](docs/05-qualidade/plano-e-resultados.md), com as tentativas de E2E que falharam e a causa de cada uma.
-
-## Rodar localmente
-Requisitos: Node 20+ e Docker.
-```bash
-npm install
-cp .env.example .env            # ajuste SESSION_SECRET (qualquer string longa)
-docker compose up -d            # PostgreSQL com pgvector na porta 5440
-npx prisma migrate deploy
-npm run db:seed                 # usuários, 31 artigos e vetores
-npm run db:demo                 # conversas de demonstração (apaga todas as conversas)
-npm run build && npm run start  # http://localhost:3000
-```
-Contas de demonstração (fictícias, só locais): `admin@agendabela.test` e `atendente@agendabela.test`, senha `prumo-demo-123`. O cliente usa [`/chat`](http://localhost:3000/chat) sem login, com `LLM_PROVIDER=mock` por padrão.
-
-```bash
-npm test && npm run test:e2e && npm run lint && npm run typecheck
-npm run eval -- --profile final --label minha-rodada      # 50 perguntas, sem banco e sem rede
-npm run eval -- --profile final --label minha-validacao --dataset holdout
-npm run sweep -- --profile final                           # varredura de limiar
-npm run screenshots                                        # regenera docs/screenshots
-```
-No Windows, uma vez: `npx playwright install chromium`.
-
-**Rodada com o Claude: não executada.** Sem chave de API, nenhum número deste repositório fala do Claude. Para executar:
-```bash
-export ANTHROPIC_API_KEY=...  LLM_PROVIDER=anthropic
-export PRICE_INPUT_PER_MTOK=...  PRICE_OUTPUT_PER_MTOK=...
-npm run eval -- --profile final --label claude-1
-```
-Detalhes em [relatorio-claude.md](docs/04-avaliacao/relatorio-claude.md). A chave só vem do ambiente.
-
-## O que falta para sair do estudo
-- Rodar a avaliação com o Claude real: [relatório](docs/04-avaliacao/relatorio-claude.md) e [roadmap](docs/06-pos-lancamento/roadmap.md).
-- Trocar o embedding por hashing, que não é semântico, por um modelo semântico: [ADR-002](docs/03-arquitetura/decisoes.md#adr-002--embeddings-locais-e-pgvector).
-- Ampliar a avaliação, hoje com 70 perguntas escritas pelo autor: [metodologia](docs/04-avaliacao/metodologia.md).
-- Medir custo e latência com o Claude: [requisitos](docs/02-definicao/requisitos.md) (RNF-01 e RNF-02, metas não medidas).
-- Cobertura de código, auditoria de acessibilidade, teste de carga e limite de tentativas de login: [plano e resultados](docs/05-qualidade/plano-e-resultados.md).
-- Hospedagem: o projeto roda só localmente.
+- **Desenvolvimento (50 perguntas):** 66% na rodada 1 (commit `9642275`), 86% na rodada 2 e 86% na rodada 3 (commit `df23b60`), em 2026-10-23. A recusa correta foi de 20% a 80% e os adversariais ficaram em 100%. [Comparativo](docs/04-avaliacao/comparativo-rodadas.md).
+- **Validação (20 perguntas):** 70% na rodada 1 (commit `402ff74`), 80% na 2 e 80% na 3 (commit `df23b60`), em 2026-10-23, o que mostra sobreajuste: +20 pontos onde ajustei e +10 onde não ajustei. [Análise de erros](docs/04-avaliacao/analise-de-erros.md).
+- **Modelo aberto real (Groq, `gpt-oss-120b`), 2026-10-23:** 78% (desenvolvimento, gravado com `sem-commit`) e 70% (validação, commit `7364348`) como rodou; 90% e 90% na reavaliação offline, depois de eu corrigir dois defeitos meus (o avaliador e o tratamento da recusa do modelo). [Relatório](docs/04-avaliacao/relatorio-modelo-aberto.md).
+- **Testes, 2026-10-24:** 83 de 83 no Vitest (commit `2cb000d`) e 14 de 14 no E2E (commit `fb6b3bc`). [Plano e resultados](docs/05-qualidade/plano-e-resultados.md).
+- **Documentação, 2026-10-24 (commit `9e46e9f`):** 10 ADRs ([decisões](docs/03-arquitetura/decisoes.md)), 22 linhas de [rastreabilidade](docs/02-definicao/rastreabilidade.md), 31 artigos em 93 trechos e 13 prints na [galeria](docs/screenshots/README.md), mais o GIF `demo-agente.gif` (24 s, 3,6 MB).
 
 ## Limites
-- A busca é lexical: nenhum limiar separa F01 e F03, e os erros que sobraram são quase todos de vocabulário.
-- Os adversariais foram escritos pelo autor, junto com as regras de entrada; 100% é um piso.
-- "Resolvida pelo agente" significa que não virou chamado; o cliente não confirma.
-- Fila e painel usam dados de demonstração, não uso real.
-- A rodada 2 mudou cinco coisas juntas, sem ablação.
+- O embedding por hashing não é semântico; os erros que sobraram são quase todos de vocabulário.
+- A avaliação tem 70 perguntas, escritas por mim, e os adversariais são piso: eu escrevi as regras de entrada.
+- A rodada com o Claude real não foi executada; custo e latência com ele não foram medidos ([relatório](docs/04-avaliacao/relatorio-claude.md)).
+- Não medi cobertura de código nem acessibilidade, não fiz teste de carga e o login não limita tentativas. Não há CI configurada.
+- A rodada `groq-1` está gravada com `sem-commit`: não é reproduzível a partir de um commit.
 
-Licença [MIT](LICENSE).
+## Evolução prevista
+- Rodar a avaliação com o Claude real e medir custo e latência.
+- Trocar o hashing por embeddings semânticos e repetir a avaliação.
+- Fechar o ciclo de feedback: respostas marcadas como incorretas viram perguntas de avaliação ([roadmap](docs/06-pos-lancamento/roadmap.md)).
+
+## Licença
+[MIT](LICENSE). O código roda localmente; as instruções estão em [CONTRIBUTING.md](CONTRIBUTING.md).
