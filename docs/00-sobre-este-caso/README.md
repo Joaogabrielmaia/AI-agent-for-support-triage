@@ -27,7 +27,7 @@ A **Agenda Bela** é um SaaS pequeno de agendamento para salões e clínicas de 
 | Código, testes, rodadas de avaliação, logs de `docs/05-qualidade/`, prints e histórico do Git | Real: saem de execuções locais. |
 | Três reuniões de discovery, reunião de aceitação e retrospectiva | Simuladas; pessoas e empresa fictícias. |
 | Volume de chamados e percentual de repetição da Agenda Bela | Premissas do caso, não medições. |
-| Conversas na fila e no painel | Dados de demonstração (`npm run db:demo`): perguntas escritas por mim, passadas pelo agente de verdade. |
+| Conversas na fila e no painel | Dados de demonstração: perguntas escritas por mim, passadas pelo agente de verdade por um script de demonstração. |
 | Metas de qualidade, custo e tempo | Hipóteses. Nenhum tempo de resposta, economia ou satisfação foi medido. |
 
 ## Uma limitação desde já

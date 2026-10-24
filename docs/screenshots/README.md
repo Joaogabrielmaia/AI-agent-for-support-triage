@@ -1,6 +1,6 @@
 # Galeria: tour pelo sistema
 
-Os 13 prints foram gerados com Playwright sobre a interface rodando localmente (`npm run screenshots`). As conversas da fila, do painel e das lacunas vêm dos dados de demonstração (`npm run db:demo`), não de uso real. A sequência segue o fluxo: o cliente pergunta, o agente responde, recusa ou escala, e a equipe acompanha. Termos técnicos estão no [glossário](../GLOSSARIO.md).
+Os 13 prints foram gerados com Playwright sobre a interface rodando localmente. As conversas da fila, do painel e das lacunas vêm dos dados de demonstração, não de uso real. A sequência segue o fluxo: o cliente pergunta, o agente responde, recusa ou escala, e a equipe acompanha. Termos técnicos estão no [glossário](../GLOSSARIO.md).
 
 ## 1. Chat com fontes
 ![Chat do cliente com a pergunta "Quanto custa o plano Profissional?" e a resposta com duas fontes numeradas](01-chat-resposta-com-fontes.png)
@@ -54,7 +54,7 @@ Os 13 prints foram gerados com Playwright sobre a interface rodando localmente (
 ## 8. Painel
 ![Painel com 37 conversas, 41% resolvidas pelo agente, 27% de escalonamento, 9 perguntas sem resposta, volume por categoria e qualidade e custo](07-painel.png)
 
-**O que se vê:** quatro indicadores, o volume por categoria e o quadro de qualidade e custo (92% das respostas avaliadas como corretas, 12 de 13; custo pede preços no `.env`). Os números vêm dos dados de demonstração (`npm run db:demo`), como a própria tela informa.
+**O que se vê:** quatro indicadores, o volume por categoria e o quadro de qualidade e custo (92% das respostas avaliadas como corretas, 12 de 13; o custo só aparece com preços configurados). Os números vêm dos dados de demonstração, como a própria tela informa.
 
 **Por que importa:** "resolvida" significa que teve resposta e não gerou chamado, e a tela diz que o cliente não confirma.
 
