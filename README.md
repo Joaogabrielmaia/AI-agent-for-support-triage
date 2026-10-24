@@ -168,9 +168,12 @@ Conventional Commits com IDs de requisito, SemVer com duas releases, três branc
 ## Documentos complementares
 [Ciclo de vida](docs/ciclo-de-vida/README.md) · [Guia da série em 7 episódios](docs/INDEX.md) · [Galeria](docs/screenshots/README.md) · [Glossário](docs/GLOSSARIO.md) · [Segurança](docs/ciclo-de-vida/seguranca-e-confiabilidade.md) · [Diagramas](docs/ciclo-de-vida/diagramas/README.md) · [CONTRIBUTING](CONTRIBUTING.md)
 
-## Licença
-[MIT](LICENSE).
-
 ## Nota de contexto acadêmico
 
-Este repositório é um estudo de caso. A Rota Fácil Software, as pessoas, os clientes e os dados são fictícios. Reuniões, atas, o cronograma das sprints e as cerimônias foram elaborados para compor o cenário de aprendizagem, com participantes identificados por papel; Houve uso de IA generativa (Claude, da Anthropic) na construção do cenário, incluindo a simulação das reuniões, e como apoio ao desenvolvimento e à documentação. O modelo do cenário, as decisões de escopo e de arquitetura e a verificação dos resultados foram definidos e conferidos pelo autor. Os resultados de testes e de CI citados vêm de execuções registradas e não são resultados ilustrativos.
+Este projeto é um estudo de caso acadêmico, com dados, empresas e atividades de gestão simulados.
+
+A IA generativa (Claude, da Anthropic) foi utilizada como apoio ao desenvolvimento e à documentação. As decisões e os resultados foram revisados pelo autor, e os testes citados seguem as evidências registradas.
+
+## Licença
+
+[MIT](LICENSE).
