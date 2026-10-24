@@ -1,4 +1,16 @@
-# Sobre este caso
+# Episódio 0 — Sobre este caso
+
+Este episódio explica o que é o Prumo e em que condições foi feito. A Agenda Bela, a empresa do estudo, é fictícia, e a tabela "Real × simulado" separa o que saiu de execução (código, testes, rodadas, logs, prints) do que é premissa ou simulação (reuniões, volume de chamados).
+A limitação que pesa em todo o resto também está aqui: sem chave de API da Anthropic, as rodadas medem o provedor simulado e uma execução com a Groq, e a rodada com o Claude não foi executada.
+
+| Documento | O que contém | Itens |
+|---|---|---|
+| Esta página (abaixo) | Produto, empresa fictícia, real × simulado, limitação sem chave de API | 1 tabela de 5 linhas |
+
+← Anterior · [Índice](../INDEX.md) · [Próximo →](../01-discovery/README.md)
+
+---
+
 
 ## O que é este projeto
 O **Prumo** é um agente de IA que faz a **triagem do suporte** de uma pequena empresa de software. Ele responde dúvidas frequentes com base numa base de conhecimento, cita a fonte, admite quando não sabe, encaminha para uma pessoa com o contexto organizado e registra o chamado com categoria e prioridade.
