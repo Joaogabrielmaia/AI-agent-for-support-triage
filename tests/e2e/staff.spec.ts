@@ -26,7 +26,7 @@ test.describe("área da equipe", () => {
 
   test("fila: filtros, detalhe com resumo/motivo, resposta ao cliente e avaliação (RF-06..RF-09)", async ({ page, browser }) => {
     // O cliente abre um chamado de verdade pelo chat.
-    const customer = await browser.newPage({ baseURL: "http://localhost:3000" });
+    const customer = await browser.newPage({ baseURL: `http://localhost:${process.env.PORT ?? "3000"}` });
     await customer.goto("/chat");
     await ask(customer, "Como faço para cancelar minha assinatura?");
     await ask(customer, "Quero o reembolso do último mês.");
